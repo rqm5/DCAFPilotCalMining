@@ -1,0 +1,13 @@
+Your first task would be to write a parser for this data file.
+I dumped it from ORACLE DB, so you need to read the csv/csv.gz file
+parse input and convert it into a dict. Each row will represent a
+dictionary. Please note that dump file contains extra spaces, newlines, etc.,
+and you'll need to figure out how to manage it. It is your first task.
+Please write stand-alone python script which we'll use to read such files.
+The script should have set of options which will allow to specify
+input data file, input schema file, e.g.
+
+parser.py --fin=myfile.csv.gz --schema=myfile.schema
+
+Once you'll get the script you may re-use it later in your other
+program via import statement.
