@@ -1,12 +1,16 @@
 Mining Data from Calendar
+=============
 
-* Description
+Description
+-------------
+
 
 In this project, we would like to extract some information from physicists' calendars, which will be used for predicting the datasets used in their near future research.
 
 Physicists' calendars contain research conferences which they have attended or plan to. Past calendar information can be used for building statistical models, and future calendar information can be used as predictors for prediction.
 
-* Design
+Design
+-------------
 
 The canlendar data will probably be provided as a (relational?) database from CERN.
 
@@ -18,7 +22,8 @@ Are we to study the relation between calendars and all the datasets (not individ
 
 In the second step, we will model the relation between the dataset access by physicists and their calendar information over the time. My tentative plan is to choose an appropriate (multivariate) time series or online learning model.
 
-* tools
+Tools
+-------------
 
 I plan to program mainly in Python. To perform queries on the given database, I may use some database driver module.
 
@@ -26,46 +31,78 @@ For statistical modelling the data, I would like to program in R (or Python), to
 
 For gluing scripts and commands together, I plan to use bash script (or Python).
 
-* skeleton code
+Scripts
+-------------
 
-The followings are declarations of some functions in Python.
+* parser.py
 
-** Parsing CMS calendar database dump
+STANDALONE SCRIPT:
 
-def parse_schema(fschema):
-    """parse a schema file for the type of each field
-    input: a schema file
-    output: an ordered dictionary of each schema attribute and its type
+'''
+usage: parser.py [-h] [--fin FDATAFRAME] [--schema FSCHEMA]
 
-def parse_dataframe_by_match_record(fdataframe, attribute2type):
-    """  parse dataframe, by specifying each record and reach field
-    input: a dataframe file, and an ordered dict of each schema attribute and its type
-    output: a list of dicts, each of which is the parsed result of each conference by the schema
-    allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
-    """
+Parse some dataframe.
 
-** Data analysis
+optional arguments:
+  -h, --help        show this help message and exit
+  --fin FDATAFRAME  input dataframe file
+  --schema FSCHEMA  input schema file
 
-def count_conf(conf_db)
-    """ extract conference counts in time slots (weeks) from calendar database
-    input: conference data in some database
-    output: a list (or dictionary) of pairs, each pair is (week_str, ct_int), where ct_int is the number of conferences (or even talks) in the week specified by string week_str.
-    """
 
-def build_model(conf_ct, data_access)
-    """build a statistical model between conference count per time slot and dataset accesses per time slot
+    This is a parser with:
     input:
-    conf_ct is the output of count_conf
-    data_access is a dataframe containing information about physicists accessing the datasets.
+    a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
+    a schema file
     output:
-    a statistical model modeling their relations
-    """
+    a list of dictionaries, each of which represents the parsed result of each data example against the schema
     
-def predict(model, conf_ct, )
-    """ predict dataset accesses from conference count in the future time slot, using a model
-    input:
-    model is a model  built by build_model().
-    conf_ct is the conference count in the future time slot
-    output:
-    dataset accesses in the future time slot
-    """
+    it is a stand-alone python script, and run by
+    python parser.py --fin=cms_conf.csv.gz --schema=schema 
+    Its options allow us to specify input data file, input schema file.
+    e.g.
+    For CMS calendar data, the schema file is:
+    CONF_ID                        NOT NULL NUMBER
+    PRES_ID                        NOT NULL NUMBER
+    CONF_NAME                               VARCHAR2(1024)
+    CONF_NAME_SHORT                         VARCHAR2(100)
+    CONF_START                              DATE
+    CONF_CATEGORY                           VARCHAR2(8)
+    CONF_DESCRIPTION_CATEGORY               VARCHAR2(1024)
+    CONF_CITY                               VARCHAR2(1024)
+    COUNTRY                                 VARCHAR2(1024)
+    CONF_WEB                                VARCHAR2(1024)
+    PRES_TITLE                              VARCHAR2(1024)
+    PRES_CATEGORY                           VARCHAR2(8)
+    PRES_DESCRIPTION_CATEGORY               VARCHAR2(1024)
+    
+    we may re-use it later in other program via import statement.
+'''
+
+FUNCTIONS
+
+'''
+    date_cvt(date_str)
+        convert a date string (input) to a datetime.date object (output)
+    
+    parse_dataframe_by_match_record(fdataframe, attribute2type)
+        parse dataframe, by specifying each record and reach field
+        input: a dataframe file, and an ordered dict of each schema attribute and its type
+        output: a list of dicts, each of which is the parsed result of each conference by the schema
+        allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
+    
+    parse_dataframe_by_split(fdataframe, attribute2type)
+        Parse a dataframe file, by specifying record separator and file separator and splitting according to the separtors
+        input: a dataframe file, and an ordered dict of each schema attribute and its type
+        output: a list of dicts, each of which is the parsed result of each conference by the schema
+        it assumes that each field can't span more than one lines.
+    
+    parse_schema(fschema)
+        parse a schema file for the type of each field
+        input: a schema file
+        output: an ordered dictionary of each schema attribute and its type
+    
+    type_db2py(dbtype)
+        convert from db types to python types
+        input: a string which represents a db type
+        output: a python type
+'''
