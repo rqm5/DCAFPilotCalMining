@@ -1,9 +1,9 @@
 
-* skeleton code
+skeleton code
 
 Declarations of some functions in Python:
 
-** Parsing CMS calendar database dump
+* Parsing CMS calendar database dump
 
 def parse_schema(fschema):
     """parse a schema file for the type of each field
@@ -17,7 +17,7 @@ def parse_dataframe_by_match_record(fdataframe, attribute2type):
     allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
     """
 
-** Data analysis
+* Data analysis
 
 def count_conf(conf_db)
     """ extract conference counts in time slots (weeks) from calendar database
