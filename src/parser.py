@@ -41,7 +41,8 @@ import collections
 def type_db2py(dbtype):
     """ convert from db types to python types
     input: a string which represents a db type
-    output: a python type"""
+    output: a python type
+    """
 
     types_dict = {
         'NOT NULL NUMBER': int,
@@ -59,8 +60,7 @@ def type_db2py(dbtype):
 
 
 def date_cvt(date_str):
-    """    
-    convert a date string (input) to a datetime.date object (output)
+    """ convert a date string (input) to a datetime.date object (output)
     """
     # year
     dmy = date_str.split('-')
@@ -78,11 +78,10 @@ def date_cvt(date_str):
 
     
 def parse_schema(fschema):
+    """parse a schema file for the type of each field
+    input: a schema file
+    output: an ordered dictionary of each schema attribute and its type
     """
-parse a schema file for the type of each field
-input: a schema file
-output: an ordered dictionary of each schema attribute and its type
-"""
     # schema
     lines = open(fschema).readlines()
     attribute2type = collections.OrderedDict()
@@ -95,12 +94,11 @@ output: an ordered dictionary of each schema attribute and its type
 
 
 def parse_dataframe_by_split(fdataframe, attribute2type):
-    """
-Parse a dataframe file, by specifying record separator and file separator and splitting according to the separtors
- input: a dataframe file, and an ordered dict of each schema attribute and its type
- output: a list of dicts, each of which is the parsed result of each conference by the schema
-it assumes that each field can't span more than one lines.
-"""    
+    """Parse a dataframe file, by specifying record separator and file separator and splitting according to the separtors
+    input: a dataframe file, and an ordered dict of each schema attribute and its type
+    output: a list of dicts, each of which is the parsed result of each conference by the schema
+    it assumes that each field can't span more than one lines.
+    """    
     schema = attribute2type.keys()
 
     # dataframe
@@ -152,12 +150,11 @@ it assumes that each field can't span more than one lines.
 
 
 def parse_dataframe_by_match_record(fdataframe, attribute2type):
-    """  
-parse dataframe, by specifying each record and reach field
- input: a dataframe file, and an ordered dict of each schema attribute and its type
- output: a list of dicts, each of which is the parsed result of each conference by the schema
-allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
-"""
+    """  parse dataframe, by specifying each record and reach field
+    input: a dataframe file, and an ordered dict of each schema attribute and its type
+    output: a list of dicts, each of which is the parsed result of each conference by the schema
+    allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
+    """
 
     schema = attribute2type.keys()
 
