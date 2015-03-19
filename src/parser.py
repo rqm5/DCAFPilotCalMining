@@ -156,6 +156,7 @@ def parse_dataframe_by_match_record(fdataframe, attribute2type):
 parse dataframe, by specifying each record and reach field
  input: a dataframe file, and an ordered dict of each schema attribute and its type
  output: a list of dicts, each of which is the parsed result of each conference by the schema
+allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
 """
 
     schema = attribute2type.keys()
@@ -202,15 +203,17 @@ if __name__ == '__main__':
     attribute2type = parse_schema(args.fschema)
 
     # two ways of parsing dataframe: (prefer the second way over the first)
-    # by specifying separtors for separating records and fields,
-    confs_list1 = parse_dataframe_by_split(args.fdataframe, attribute2type)
-    # by matching each record and field. 
+    # by specifying separtors for separating records and fields, assume each field of a record only spans one line
+    # confs_list1 = parse_dataframe_by_split(args.fdataframe, attribute2type)
+    # by matching each record and field.  allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
     confs_list2 = parse_dataframe_by_match_record(args.fdataframe, attribute2type)    
 
     # examine the parsed result
 
-    print len(confs_list1), len(confs_list2)    
-
+    # print len(confs_list1)
+    print "There are {:d} conference records".format(len(confs_list2))
+    print "*******"
+    
     for conf in confs_list2:
         print conf
         print "*******"
