@@ -6,7 +6,7 @@ In the dataframe file
 For parsing purpose, I manually joined the lines of each into one line, before running my parser program.
 
 
-      386,      1910
+       386,      1910
 Jahrestagung 2010 der DPG, Deutsche Physikalische Gesellschaft
 DPG-2010                                                                                            ,15-MAR-10,NATCONF
 national meeting
