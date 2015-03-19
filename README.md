@@ -38,7 +38,7 @@ Scripts
 
 STANDALONE SCRIPT:
 
-'''
+```
 usage: parser.py [-h] [--fin FDATAFRAME] [--schema FSCHEMA]
 
 Parse some dataframe.
@@ -76,11 +76,11 @@ optional arguments:
     PRES_DESCRIPTION_CATEGORY               VARCHAR2(1024)
     
     we may re-use it later in other program via import statement.
-'''
+```
 
 FUNCTIONS
 
-'''
+```
     date_cvt(date_str)
         convert a date string (input) to a datetime.date object (output)
     
@@ -105,4 +105,4 @@ FUNCTIONS
         convert from db types to python types
         input: a string which represents a db type
         output: a python type
-'''
+```
