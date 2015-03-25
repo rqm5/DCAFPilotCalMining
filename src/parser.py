@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 
 """
-This is a parser with:
+This is a stand-alone python script, and run by
+python src/parser.py --fdat data/cms_conf.csv.gz --fsch data/schema -fpsd data/cms_conf_parsed.csv -fccw data/cms_conf_ct_perweek.csv
 input:
-a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
-a schema file
+data/cms_conf.csv.gz: a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
+data/schema: a schema file decribing the attributes of each conference record (see below)
 output:
-a list of dictionaries, each of which represents the parsed result of each data example against the schema
-a csv file with schema as columns, dictionaries as rows, and TAB as deliminator within each row.
+data/cms_conf_parsed.csv: a csv file with the schema as columns, conference records as rows, with the attributes in each record delimited by TAB
+data/cms_conf_ct_perweek.csv: a csv file with week and conf ct as columns, each record reprepsenting the week and the nb of conferences in the week, which delimited by TAB
 
-it is a stand-alone python script, and run by
-python src/parser.py --fin=data/cms_conf.csv.gz --schema=data/schema -fout=data/cms_conf_parsed.csv
-Its options allow us to specify input data file, input schema file.
 e.g.
 For CMS calendar data, the schema file is:
 CONF_ID                        NOT NULL NUMBER
@@ -28,7 +26,7 @@ PRES_TITLE                              VARCHAR2(1024)
 PRES_CATEGORY                           VARCHAR2(8)
 PRES_DESCRIPTION_CATEGORY               VARCHAR2(1024)
 
-we may re-use it later in other program via import statement.
+This is also a module with functions maybe reused in other program via import statement.
 """
 
 import argparse
@@ -189,36 +187,103 @@ def parse_dataframe_by_match_record(fdataframe, attribute2type):
     return confs_list        
         
 
+def group_confs_by_week(confs_list):
+    ''' Group the confs by week
+    Input: 
+    confs_list: a list of dictionaries, each represents a conf
+    output: 
+    gruped: a dict of (week, list of confs), 
+    '''
+
+    grouped = collections.OrderedDict()
+    for conf in confs_list:
+        yearweek = conf['CONF_START'].isocalendar()[0:2]
+        # print yearweek, type(yearweek)
+        grouped.setdefault(yearweek, []).append(conf)
+    return grouped
+
+def count_confs_by_week(grouped):
+    ''' Count the confs by week
+    Input: 
+    gruped: a dict of (week, list of confs), 
+    output: 
+    confct_by_wk: a dict of (week, conf ct)
+    '''
+    
+    startyearweek = grouped.keys()[0]
+    endyearweek = grouped.keys()[-1]
+    confct_by_wk = collections.OrderedDict()
+    # for week in range(startyearweek[1], datetime.date(startyearweek[0], 12, 28).isocalendar()[1]+1): # assume the conferences are given starting from the earlies week when there is a conference.
+    for week in range(1, datetime.date(startyearweek[0], 12, 28).isocalendar()[1]+1):      # assume the conferences are given starting from the first week of a year
+        confct_by_wk[(startyearweek[0], week)] = len(grouped.setdefault((startyearweek[0], week), []))
+    for year in range(startyearweek[0]+1, endyearweek[0]):
+        for week in range(1, datetime.date(year, 12, 28).isocalendar()[1]+1):
+            confct_by_wk[(year, week)] = len(grouped.setdefault((year, week), []))
+    for week in range(1, endyearweek[1]+1):
+        confct_by_wk[(endyearweek[0], week)] = len(grouped.setdefault((endyearweek[0], week), []))
+
+    return confct_by_wk
+
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Parse some dataframe.')
-    parser.add_argument('--fin', dest='fdataframe', help='input dataframe file')
-    parser.add_argument('--schema', dest='fschema', help='input schema file')
-    parser.add_argument('--fout', dest='fcvs', help='output cvs file')        
+    parser.add_argument('--fdat', dest='fdat', help='input dataframe file')
+    parser.add_argument('--fsch', dest='fsch', help='input schema file')
+    parser.add_argument('--fpsd', dest='fpsd', help='output parsed data csv file')
+    parser.add_argument('--fccw', dest='fccw', help='output conf-ct-per-week csv file')        
     args = parser.parse_args()
 
+
+    # 1. parse the data frame into list of conf dicts
     
-    attribute2type = parse_schema(args.fschema)
+    attribute2type = parse_schema(args.fsch)
 
     # two ways of parsing dataframe: (prefer the second way over the first)
     # by specifying separtors for separating records and fields, assume each field of a record only spans one line
-    # confs_list1 = parse_dataframe_by_split(args.fdataframe, attribute2type)
+    # confs_list1 = parse_dataframe_by_split(args.fdat, attribute2type)
     # by matching each record and field.  allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
-    confs_list2 = parse_dataframe_by_match_record(args.fdataframe, attribute2type)    
+    confs_list = parse_dataframe_by_match_record(args.fdat, attribute2type)    
 
-    # examine the parsed result
+    # Output the parsed result
 
     # print len(confs_list1)
-    print "There are {:d} conference records".format(len(confs_list2))
-    print "*******"
-    
+    print "There are {:d} conference records".format(len(confs_list))
+
+    # print "*******"
     # for conf in confs_list2:
     #     print conf
     #     print "*******"
 
     schema = attribute2type.keys()
-    with open(args.fcvs, 'w') as csvfile:
+    confs_list = sorted(confs_list, key=lambda k: k['CONF_START'])  # sort confs by date, for later grouping by week
+    with open(args.fpsd, 'w') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=schema,  delimiter='\t')
         writer.writeheader()
-        writer.writerows(confs_list2)
+        writer.writerows(confs_list)
+
+
+    # 2. group and count confs by week
+    grouped = group_confs_by_week(confs_list)
+
+    # # output the grouped result
+    # print "*********"
+    # for week,confs in grouped:
+    #     print "For week " + str(week) + ":"
+    #     print confs
+    #     print "**********"
+
+    # 3. group and count confs by week
+    confct_by_wk = count_confs_by_week(grouped)
+    
+    # # output the conf ct per week
+    # print "**************"
+    # for week, ct in confct_by_wk:
+    #     print week, ct
+
+    with open(args.fccw, 'w') as csvfile:
+        csvfile.write('week\tconfct\n')
+        for week, ct in confct_by_wk.items():
+            csvfile.write('{}\t{}\n'.format(week, ct))
+
+    
