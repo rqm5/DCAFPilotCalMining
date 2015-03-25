@@ -277,7 +277,7 @@ if __name__ == '__main__':
         writer.writerows(confs_list)
 
 
-    # 2. group and count confs by week
+    # 2. group confs by week
     grouped = group_confs_by_week(confs_list)
 
     # # output the grouped result
@@ -287,7 +287,7 @@ if __name__ == '__main__':
     #     print confs
     #     print "**********"
 
-    # 3. group and count confs by week
+    # 3. count confs by week
     confct_by_wk = count_confs_by_week(grouped)
     
     # # output the conf ct per week
