@@ -216,27 +216,46 @@ def group_confs_by_week(confs_list):
         grouped.setdefault(yearweek, []).append(conf)
     return grouped
 
+
 def count_confs_by_week(grouped):
     ''' Count the confs by week
     Input: 
     grouped: a dict of (week, list of confs), 
     output: 
-    confct_by_wk: a dict of (week, conf ct)
+    confct_by_wk: a list of [week, conf ct]
     '''
     
     startyearweek = grouped.keys()[0]
     endyearweek = grouped.keys()[-1]
-    confct_by_wk = collections.OrderedDict()
+    confct_by_wk = []
     # for week in range(startyearweek[1], datetime.date(startyearweek[0], 12, 28).isocalendar()[1]+1): # assume the conferences are given starting from the earlies week when there is a conference.
     for week in range(1, datetime.date(startyearweek[0], 12, 28).isocalendar()[1]+1):      # assume the conferences are given starting from the first week of a year
-        confct_by_wk[(startyearweek[0], week)] = len(grouped.setdefault((startyearweek[0], week), []))
+        confct_by_wk.append([(startyearweek[0], week), len(grouped.setdefault((startyearweek[0], week), []))])
     for year in range(startyearweek[0]+1, endyearweek[0]):
         for week in range(1, datetime.date(year, 12, 28).isocalendar()[1]+1):
-            confct_by_wk[(year, week)] = len(grouped.setdefault((year, week), []))
+            confct_by_wk.append([(year, week), len(grouped.setdefault((year, week), []))])
     for week in range(1, endyearweek[1]+1):
-        confct_by_wk[(endyearweek[0], week)] = len(grouped.setdefault((endyearweek[0], week), []))
+        confct_by_wk.append([(endyearweek[0], week), len(grouped.setdefault((endyearweek[0], week), []))])
 
     return confct_by_wk
+
+
+def count_confs_in_future(confct_by_wk, periods):
+    ''' for each week, count the nb of confs in the next period[p] weeks
+    input:
+    confct_by_wk: nb of confs in each week
+    periods: nb of future weeks
+    output:
+    confct_future: nb of confs in future weeks, from each week
+    '''
+    confct_future = [[x[0]] for x in confct_by_wk]
+    # print confct_future
+    for p in periods:
+        for i in range(0,len(confct_by_wk)-p):
+            confct_future[i].append(sum(x[1] for x in confct_by_wk[i + 1: i + p + 1]))
+        for i in range(len(confct_by_wk)-p, len(confct_by_wk)):
+            confct_future[i].append(None)
+    return confct_future
 
 
 if __name__ == '__main__':
@@ -245,7 +264,8 @@ if __name__ == '__main__':
     parser.add_argument('--fdat', dest='fdat', help='input dataframe file')
     parser.add_argument('--fsch', dest='fsch', help='input schema file')
     parser.add_argument('--fpsd', dest='fpsd', help='output parsed data csv file')
-    parser.add_argument('--fccw', dest='fccw', help='output conf-ct-per-week csv file')        
+    parser.add_argument('--fccw', dest='fccw', help='output conf-ct-per-week csv file')
+    parser.add_argument('--fccf', dest='fccf', help='output conf-ct-in-future-from-each-week csv file')            
     args = parser.parse_args()
 
 
@@ -297,7 +317,18 @@ if __name__ == '__main__':
 
     with open(args.fccw, 'w') as csvfile:
         csvfile.write('week\tconfct\n')
-        for week, ct in confct_by_wk.items():
+        for week, ct in confct_by_wk:
             csvfile.write('{}\t{}\n'.format(week, ct))
 
-    
+    # 4. count confs in certain nb of future weeks, from each week
+    periods=[1,4,12] # for next week, next month, and next 3 months
+    confct_future = count_confs_in_future(confct_by_wk, periods)
+        
+    # print "***************"
+    # for item in confct_future:
+    #     print item
+
+    with open(args.fccf, 'w') as csvfile:
+        csvfile.write('week\tconfct in 1wk\tconfct in 4wks\tconfct in 12wks\n')
+        for week, ct1, ct4, ct12 in confct_future:
+            csvfile.write('{}\t{}\t{}\t{}\n'.format(week, ct1, ct4, ct12))
