@@ -10,7 +10,7 @@ a list of dictionaries, each of which represents the parsed result of each data 
 a csv file with schema as columns, dictionaries as rows, and TAB as deliminator within each row.
 
 it is a stand-alone python script, and run by
-python parser.py --fin=cms_conf.csv.gz --schema=schema -fout=cms_conf_parsed.csv
+python src/parser.py --fin=data/cms_conf.csv.gz --schema=data/schema -fout=data/cms_conf_parsed.csv
 Its options allow us to specify input data file, input schema file.
 e.g.
 For CMS calendar data, the schema file is:
