@@ -39,6 +39,7 @@ Scripts
 STANDALONE SCRIPT:
 
 ```
+
 usage: parser.py [-h] [--fin FDATAFRAME] [--schema FSCHEMA]
 
 Parse some dataframe.
@@ -81,6 +82,7 @@ optional arguments:
 FUNCTIONS
 
 ```
+
     date_cvt(date_str)
         convert a date string (input) to a datetime.date object (output)
     

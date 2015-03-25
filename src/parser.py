@@ -7,9 +7,10 @@ a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, 
 a schema file
 output:
 a list of dictionaries, each of which represents the parsed result of each data example against the schema
+a csv file with schema as columns, dictionaries as rows, and TAB as deliminator within each row.
 
 it is a stand-alone python script, and run by
-python parser.py --fin=cms_conf.csv.gz --schema=schema 
+python parser.py --fin=cms_conf.csv.gz --schema=schema -fout=cms_conf_parsed.csv
 Its options allow us to specify input data file, input schema file.
 e.g.
 For CMS calendar data, the schema file is:
@@ -35,7 +36,7 @@ import datetime
 import re
 import gzip
 import collections
-
+import csv
 
 
 def type_db2py(dbtype):
@@ -193,7 +194,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Parse some dataframe.')
     parser.add_argument('--fin', dest='fdataframe', help='input dataframe file')
-    parser.add_argument('--schema', dest='fschema', help='input schema file')    
+    parser.add_argument('--schema', dest='fschema', help='input schema file')
+    parser.add_argument('--fout', dest='fcvs', help='output cvs file')        
     args = parser.parse_args()
 
     
@@ -211,7 +213,12 @@ if __name__ == '__main__':
     print "There are {:d} conference records".format(len(confs_list2))
     print "*******"
     
-    for conf in confs_list2:
-        print conf
-        print "*******"
-    
+    # for conf in confs_list2:
+    #     print conf
+    #     print "*******"
+
+    schema = attribute2type.keys()
+    with open(args.fcvs, 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=schema,  delimiter='\t')
+        writer.writeheader()
+        writer.writerows(confs_list2)
