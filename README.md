@@ -36,22 +36,18 @@ Scripts
 
 * parser.py
 
-STANDALONE SCRIPT:
 
 ```
-
-DESCRIPTION
-This is a parser with:
+This is a stand-alone python script, and run by
+python src/parser.py --fdat data/cms_conf.csv.gz --fsch data/schema -fpsd data/cms_conf_parsed.csv -fccw data/cms_conf_ct_perweek.csv
 input:
-a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
-a schema file
+data/cms_conf.csv.gz: a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
+data/schema: a schema file decribing the attributes of each conference record (see below)
 output:
-a list of dictionaries, each of which represents the parsed result of each data example against the schema
-a csv file with schema as columns, dictionaries as rows, and TAB as deliminator within each row.
+data/cms_conf_parsed.csv: a csv file with the schema as columns, conference records as rows, with the attributes in each record delimited by TAB
+data/cms_conf_ct_perweek.csv: a csv file with week and conf ct as columns, each record reprepsenting the week and the nb of conferences in the week, which
+delimited by TAB
 
-it is a stand-alone python script, and run by
-python src/parser.py --fin=data/cms_conf.csv.gz --schema=data/schema -fout=data/cms_conf_parsed.csv
-Its options allow us to specify input data file, input schema file.
 e.g.
 For CMS calendar data, the schema file is:
 CONF_ID                        NOT NULL NUMBER
@@ -68,38 +64,62 @@ PRES_TITLE                              VARCHAR2(1024)
 PRES_CATEGORY                           VARCHAR2(8)
 PRES_DESCRIPTION_CATEGORY               VARCHAR2(1024)
 
-we may re-use it later in other program via import statement.
+This is also a module with functions maybe reused in other program via import statement.
 
-```
 
-FUNCTIONS
+count_confs_by_week(grouped)
+Count the confs by week
+Input:
+grouped: a dict of (week, list of confs),
+output:
+confct_by_wk: a dict of (week, conf ct)
 
-```
+date_cvt(date_str)
+convert a date string to a datetime.date object
+input:
+date_str: a string represnting a date
+output:
+a datatime.date object
 
-    date_cvt(date_str)
-        convert a date string (input) to a datetime.date object (output)
-    
-    parse_dataframe_by_match_record(fdataframe, attribute2type)
-        parse dataframe, by specifying each record and reach field
-        input: a dataframe file, and an ordered dict of each schema attribute and its type
-        output: a list of dicts, each of which is the parsed result of each conference by the schema
-        allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
-    
-    parse_dataframe_by_split(fdataframe, attribute2type)
-        Parse a dataframe file, by specifying record separator and file separator and splitting according to the separtors
-        input: a dataframe file, and an ordered dict of each schema attribute and its type
-        output: a list of dicts, each of which is the parsed result of each conference by the schema
-        it assumes that each field can't span more than one lines.
-    
-    parse_schema(fschema)
-        parse a schema file for the type of each field
-        input: a schema file
-        output: an ordered dictionary of each schema attribute and its type
-    
-    type_db2py(dbtype)
-        convert from db types to python types
-        input: a string which represents a db type
-        output: a python type
+group_confs_by_week(confs_list)
+Group the confs by week
+Input:
+confs_list: a list of dictionaries, each represents a conf
+output:
+grouped: a dict of (week, list of confs),
+
+parse_dataframe_by_match_record(fdataframe, attribute2type)
+parse dataframe, by specifying each record and reach field
+allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
+input:
+fdataframe: a dataframe file,
+attribte2type: an ordered dict of each schema attribute and its type
+output:
+conf_list: a list of dicts, each of which is the parsed result of each conference by the schema
+
+parse_dataframe_by_split(fdataframe, attribute2type)
+Parse a dataframe file, by specifying record separator and file separator and splitting according to the separtors
+it assumes that each field can't span more than one lines.
+input:
+fdataframe: a dataframe file,
+attribute2type: an ordered dict of each schema attribute and its type
+output:
+conf_list: a list of dicts, each of which is the parsed result of each conference by the schema
+
+parse_schema(fschema)
+parse a schema file for the type of each field
+input:
+fschema: a schema file
+output:
+attribute2type: an ordered dictionary of each schema attribute and its type
+
+type_db2py(dbtype)
+convert from db types to python types
+input:
+dbtype: a string which represents a db type
+output:
+pytype: a python type
+
 ```
 
 TODO

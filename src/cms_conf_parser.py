@@ -39,8 +39,10 @@ import csv
 
 def type_db2py(dbtype):
     """ convert from db types to python types
-    input: a string which represents a db type
-    output: a python type
+    input: 
+    dbtype: a string which represents a db type
+    output: 
+    pytype: a python type
     """
 
     types_dict = {
@@ -59,7 +61,11 @@ def type_db2py(dbtype):
 
 
 def date_cvt(date_str):
-    """ convert a date string (input) to a datetime.date object (output)
+    """ convert a date string to a datetime.date object 
+    input: 
+    date_str: a string represnting a date
+    output:
+    a datatime.date object
     """
     # year
     dmy = date_str.split('-')
@@ -78,8 +84,10 @@ def date_cvt(date_str):
     
 def parse_schema(fschema):
     """parse a schema file for the type of each field
-    input: a schema file
-    output: an ordered dictionary of each schema attribute and its type
+    input: 
+    fschema: a schema file
+    output: 
+    attribute2type: an ordered dictionary of each schema attribute and its type
     """
     # schema
     lines = open(fschema).readlines()
@@ -94,9 +102,12 @@ def parse_schema(fschema):
 
 def parse_dataframe_by_split(fdataframe, attribute2type):
     """Parse a dataframe file, by specifying record separator and file separator and splitting according to the separtors
-    input: a dataframe file, and an ordered dict of each schema attribute and its type
-    output: a list of dicts, each of which is the parsed result of each conference by the schema
     it assumes that each field can't span more than one lines.
+    input: 
+    fdataframe: a dataframe file, 
+    attribute2type: an ordered dict of each schema attribute and its type
+    output: 
+    conf_list: a list of dicts, each of which is the parsed result of each conference by the schema
     """    
     schema = attribute2type.keys()
 
@@ -150,9 +161,12 @@ def parse_dataframe_by_split(fdataframe, attribute2type):
 
 def parse_dataframe_by_match_record(fdataframe, attribute2type):
     """  parse dataframe, by specifying each record and reach field
-    input: a dataframe file, and an ordered dict of each schema attribute and its type
-    output: a list of dicts, each of which is the parsed result of each conference by the schema
     allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
+    input: 
+    fdataframe: a dataframe file, 
+    attribte2type: an ordered dict of each schema attribute and its type
+    output: 
+    conf_list: a list of dicts, each of which is the parsed result of each conference by the schema
     """
 
     schema = attribute2type.keys()
@@ -192,7 +206,7 @@ def group_confs_by_week(confs_list):
     Input: 
     confs_list: a list of dictionaries, each represents a conf
     output: 
-    gruped: a dict of (week, list of confs), 
+    grouped: a dict of (week, list of confs), 
     '''
 
     grouped = collections.OrderedDict()
@@ -205,7 +219,7 @@ def group_confs_by_week(confs_list):
 def count_confs_by_week(grouped):
     ''' Count the confs by week
     Input: 
-    gruped: a dict of (week, list of confs), 
+    grouped: a dict of (week, list of confs), 
     output: 
     confct_by_wk: a dict of (week, conf ct)
     '''
