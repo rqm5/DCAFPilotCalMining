@@ -34,12 +34,12 @@ For gluing scripts and commands together, I plan to use bash script (or Python).
 Scripts
 -------------
 
-* parser.py
+* cms_conf_parser.py
 
 
 ```
 This is a stand-alone python script, and run by
-python src/parser.py --fdat data/cms_conf.csv.gz --fsch data/schema -fpsd data/cms_conf_parsed.csv -fccw data/cms_conf_ct_perweek.csv
+python src/cms_conf_parser.py --fdat data/cms_conf.csv.gz --fsch data/schema -fpsd data/cms_conf_parsed.csv -fccw data/cms_conf_ct_perweek.csv
 input:
 data/cms_conf.csv.gz: a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
 data/schema: a schema file decribing the attributes of each conference record (see below)
