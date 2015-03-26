@@ -39,7 +39,8 @@ Scripts
 
 ```
 This is a stand-alone python script, and run by
-python src/cms_conf_parser.py --fdat data/cms_conf.csv.gz --fsch data/schema -fpsd data/cms_conf_parsed.csv -fccw data/cms_conf_ct_perweek.csv
+python src/cms_conf_parser.py --fdat data/cms_conf.csv.gz --fsch data/schema --fpsd data/cms_conf_parsed.csv --fccw data/cms_conf_ct_perweek.csv --fccf dat
+a/cms_conf_ct_future.csv
 input:
 data/cms_conf.csv.gz: a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
 data/schema: a schema file decribing the attributes of each conference record (see below)
@@ -47,6 +48,7 @@ output:
 data/cms_conf_parsed.csv: a csv file with the schema as columns, conference records as rows, with the attributes in each record delimited by TAB
 data/cms_conf_ct_perweek.csv: a csv file with week and conf ct as columns, each record reprepsenting the week and the nb of conferences in the week, which
 delimited by TAB
+data/cms_conf_ct_future.csv: a csv file with week, conf ct in future 1 week, conf ct in future 4 weeks, and conf ct in future 12 weeks.
 
 e.g.
 For CMS calendar data, the schema file is:
@@ -66,13 +68,20 @@ PRES_DESCRIPTION_CATEGORY               VARCHAR2(1024)
 
 This is also a module with functions maybe reused in other program via import statement.
 
-
 count_confs_by_week(grouped)
 Count the confs by week
 Input:
 grouped: a dict of (week, list of confs),
 output:
-confct_by_wk: a dict of (week, conf ct)
+confct_by_wk: a list of [week, conf ct]
+
+count_confs_in_future(confct_by_wk, periods)
+for each week, count the nb of confs in the next period[p] weeks
+input:
+confct_by_wk: nb of confs in each week
+periods: nb of future weeks
+output:
+confct_future: nb of confs in future weeks, from each week
 
 date_cvt(date_str)
 convert a date string to a datetime.date object
@@ -119,6 +128,7 @@ input:
 dbtype: a string which represents a db type
 output:
 pytype: a python type
+
 
 ```
 

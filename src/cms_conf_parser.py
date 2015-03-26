@@ -2,13 +2,14 @@
 
 """
 This is a stand-alone python script, and run by
-python src/cms_conf_parser.py --fdat data/cms_conf.csv.gz --fsch data/schema -fpsd data/cms_conf_parsed.csv -fccw data/cms_conf_ct_perweek.csv
+python src/cms_conf_parser.py --fdat data/cms_conf.csv.gz --fsch data/schema --fpsd data/cms_conf_parsed.csv --fccw data/cms_conf_ct_perweek.csv --fccf data/cms_conf_ct_future.csv
 input:
 data/cms_conf.csv.gz: a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
 data/schema: a schema file decribing the attributes of each conference record (see below)
 output:
 data/cms_conf_parsed.csv: a csv file with the schema as columns, conference records as rows, with the attributes in each record delimited by TAB
 data/cms_conf_ct_perweek.csv: a csv file with week and conf ct as columns, each record reprepsenting the week and the nb of conferences in the week, which delimited by TAB
+data/cms_conf_ct_future.csv: a csv file with week, conf ct in future 1 week, conf ct in future 4 weeks, and conf ct in future 12 weeks. 
 
 e.g.
 For CMS calendar data, the schema file is:
