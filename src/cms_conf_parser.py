@@ -7,7 +7,7 @@ input:
 data/cms_conf.csv.gz: a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
 data/schema: a schema file decribing the attributes of each conference record (see below)
 output:
-data/cms_conf_parsed.csv: a csv file with the schema as columns, conference records as rows, with the attributes in each record delimited by TAB
+data/cms_conf_parsed.csv: a csv file with the schema as columns, conference records as rows (sorted by date), with the attributes in each record delimited by TAB.
 data/cms_conf_ct_perweek.csv: a csv file with week and conf ct as columns, each record reprepsenting the week and the nb of conferences in the week, which delimited by TAB
 data/cms_conf_ct_future.csv: a csv file with week, conf ct in future 1 week, conf ct in future 4 weeks, and conf ct in future 12 weeks. 
 
