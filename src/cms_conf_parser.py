@@ -259,6 +259,18 @@ def count_confs_in_future(confct_by_wk, periods):
     return confct_future
 
 
+def iso_year_start(iso_year):
+    '''The gregorian calendar date of the first day of the given ISO year'''
+    fourth_jan = datetime.date(iso_year, 1, 4)
+    delta = datetime.timedelta(fourth_jan.isoweekday()-1)
+    return fourth_jan - delta
+
+def iso_to_gregorian(iso_year, iso_week, iso_day):
+    '''Gregorian calendar date for the given ISO year, week and day'''
+    year_start = iso_year_start(iso_year)
+    return year_start + datetime.timedelta(days=iso_day-1, weeks=iso_week-1)
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Parse some dataframe.')
@@ -317,12 +329,12 @@ if __name__ == '__main__':
     #     print week, ct
 
     with open(args.fccw, 'w') as csvfile:
-        csvfile.write('week\tconfct\n')
+        csvfile.write('week,confct\n')
         for week, ct in confct_by_wk:
-            csvfile.write('{}\t{}\n'.format(week, ct))
+            csvfile.write('{},{}\n'.format(week, ct))
 
     # 4. count confs in certain nb of future weeks, from each week
-    periods=[1,4,12] # for next week, next month, and next 3 months
+    periods=[1,2,4,6] # for next few weeks
     confct_future = count_confs_in_future(confct_by_wk, periods)
         
     # print "***************"
@@ -330,6 +342,6 @@ if __name__ == '__main__':
     #     print item
 
     with open(args.fccf, 'w') as csvfile:
-        csvfile.write('week\tconfct in 1wk\tconfct in 4wks\tconfct in 12wks\n')
-        for week, ct1, ct4, ct12 in confct_future:
-            csvfile.write('{}\t{}\t{}\t{}\n'.format(week, ct1, ct4, ct12))
+        csvfile.write('tstamp1,tstamp2,0wk,1wk,2wk,4wk,6wk\n')
+        for i in range(0,len(confct_future)):
+            csvfile.write('{},{},{},{},{},{},{}\n'.format(iso_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), iso_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 7).strftime('%Y%m%d'), confct_by_wk[i][1], confct_future[i][1], confct_future[i][2], confct_future[i][3], confct_future[i][4]))
