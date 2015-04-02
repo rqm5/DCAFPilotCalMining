@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-This is a stand-alone python script, and run by
-python src/cms_conf_parser.py --fdat data/cms_conf.csv.gz --fsch data/schema --fpsd data/cms_conf_parsed.csv --fccw data/cms_conf_ct_perweek.csv --fccf data/cms_conf_ct_future.csv
+This is a stand-alone python script, and run from src directory
+python cms_conf_parser.py --fdat ../data/cms_conf.csv.gz --fsch ../data/schema --fpsd ../data/cms_conf_parsed.csv --fccw ../data/cms_conf_ct_perweek.csv --fccf ../data/cms_conf_ct_future.csv
 input:
 data/cms_conf.csv.gz: a csv/csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
 data/schema: a schema file decribing the attributes of each conference record (see below)
@@ -202,8 +202,22 @@ def parse_dataframe_by_match_record(fdataframe, attribute2type):
     return confs_list        
         
 
+########### for calendar weeks
+
+def iso_year_start(iso_year):
+    '''The gregorian calendar date of the first day of the given ISO year'''
+    fourth_jan = datetime.date(iso_year, 1, 4)
+    delta = datetime.timedelta(fourth_jan.isoweekday()-1)
+    return fourth_jan - delta
+
+def iso_to_gregorian(iso_year, iso_week, iso_day):
+    '''Gregorian calendar date for the given ISO year, week and day'''
+    year_start = iso_year_start(iso_year)
+    return year_start + datetime.timedelta(days=iso_day-1, weeks=iso_week-1)
+
+
 def group_confs_by_week(confs_list):
-    ''' Group the confs by week
+    ''' Group the confs by calendar week
     Input: 
     confs_list: a list of dictionaries, each represents a conf
     output: 
@@ -219,7 +233,7 @@ def group_confs_by_week(confs_list):
 
 
 def count_confs_by_week(grouped):
-    ''' Count the confs by week
+    ''' Count the confs by calendar week
     Input: 
     grouped: a dict of (week, list of confs), 
     output: 
@@ -241,13 +255,76 @@ def count_confs_by_week(grouped):
     return confct_by_wk
 
 
+
+
+########### for self-defined weeks, with the first week in a year starting from jan 1 and with Dec 31 (and 30) merged to the previous week
+
+def mycalendar(date):
+    ''' convert from Gregorian Calendar date to (year, week, day) starting from Jan 1
+    '''
+    year = date.year
+    delta = date - datetime.date(date.year, 1, 1)
+    week = delta.days / 7 + 1
+    day = delta.days % 7 + 1
+    if week == 53: # when date is the last one or two days where there are less than 7 days left to form a week
+        week -= 1
+        day += 7
+    return (year,week,day)
+
+def mine_to_gregorian(my_year, my_week, my_day):
+    '''Gregorian calendar date for the given year, week and day starting from Jan 1'''
+    year_start = datetime.date(my_year, 1, 1)
+    return year_start + datetime.timedelta(days=my_day-1, weeks=my_week-1)
+
+
+def group_confs_by_myweek(confs_list):
+    ''' Group the confs by self-defined week
+    Input: 
+    confs_list: a list of dictionaries, each represents a conf
+    output: 
+    grouped: a dict of (week, list of confs), 
+    '''
+
+    grouped = collections.OrderedDict()
+    for conf in confs_list:
+        yearweek = mycalendar(conf['CONF_START'])[0:2]
+        # print yearweek, type(yearweek)
+        grouped.setdefault(yearweek, []).append(conf)
+    return grouped
+
+
+def count_confs_by_myweek(grouped):
+    ''' Count the confs by self-def week
+    Input: 
+    grouped: a dict of (week, list of confs), 
+    output: 
+    confct_by_wk: a list of [week, conf ct]
+    '''
+    
+    startyearweek = grouped.keys()[0]
+    endyearweek = grouped.keys()[-1]
+    confct_by_wk = []
+    # for week in range(startyearweek[1], datetime.date(startyearweek[0], 12, 28).isocalendar()[1]+1): # assume the conferences are given starting from the earlies week when there is a conference.
+    for week in range(1, mycalendar(datetime.date(startyearweek[0], 12, 28))[1]+1):      # assume the conferences are given starting from the first week of a year
+        confct_by_wk.append([(startyearweek[0], week), len(grouped.setdefault((startyearweek[0], week), []))])
+    for year in range(startyearweek[0]+1, endyearweek[0]):
+        for week in range(1, mycalendar(datetime.date(year, 12, 28))[1]+1):
+            confct_by_wk.append([(year, week), len(grouped.setdefault((year, week), []))])
+    for week in range(1, endyearweek[1]+1):
+        confct_by_wk.append([(endyearweek[0], week), len(grouped.setdefault((endyearweek[0], week), []))])
+
+    return confct_by_wk
+
+
+################ count confs in future weeks, independent of def of a week
+
 def count_confs_in_future(confct_by_wk, periods):
     ''' for each week, count the nb of confs in the next period[p] weeks
     input:
-    confct_by_wk: nb of confs in each week
-    periods: nb of future weeks
+    confct_by_wk: a list of conf nb in each week, a list of [week, conf ct]
+    periods: a list of future periods' lengths in weeks. a list of [period 1 lenth, period 2 length, ...]
     output:
-    confct_future: nb of confs in future weeks, from each week
+    confct_future: a list of conf nb in future weeks, from each week. a list of [week, conf ct in period 1, conf ct in period 2, ...]
     '''
     confct_future = [[x[0]] for x in confct_by_wk]
     # print confct_future
@@ -259,17 +336,7 @@ def count_confs_in_future(confct_by_wk, periods):
     return confct_future
 
 
-def iso_year_start(iso_year):
-    '''The gregorian calendar date of the first day of the given ISO year'''
-    fourth_jan = datetime.date(iso_year, 1, 4)
-    delta = datetime.timedelta(fourth_jan.isoweekday()-1)
-    return fourth_jan - delta
-
-def iso_to_gregorian(iso_year, iso_week, iso_day):
-    '''Gregorian calendar date for the given ISO year, week and day'''
-    year_start = iso_year_start(iso_year)
-    return year_start + datetime.timedelta(days=iso_day-1, weeks=iso_week-1)
-
+###################
 
 if __name__ == '__main__':
 
@@ -311,20 +378,23 @@ if __name__ == '__main__':
 
 
     # 2. group confs by week
-    grouped = group_confs_by_week(confs_list)
-
+    # grouped = group_confs_by_week(confs_list)
+    grouped = group_confs_by_myweek(confs_list)
+    
     # # output the grouped result
-    # print "*********"
-    # for week,confs in grouped:
-    #     print "For week " + str(week) + ":"
+    # print "****group confs*****"
+    # # import pdb; pdb.set_trace()
+    # for yearweek,confs in grouped.iteritems():
+    #     print "For week " + str(yearweek) + ":"
     #     print confs
     #     print "**********"
 
     # 3. count confs by week
-    confct_by_wk = count_confs_by_week(grouped)
+    # confct_by_wk = count_confs_by_week(grouped)
+    confct_by_wk = count_confs_by_myweek(grouped)
     
     # # output the conf ct per week
-    # print "**************"
+    # print "******count confs by week********"
     # for week, ct in confct_by_wk:
     #     print week, ct
 
@@ -344,4 +414,8 @@ if __name__ == '__main__':
     with open(args.fccf, 'w') as csvfile:
         csvfile.write('tstamp1,tstamp2,0wk,1wk,2wk,4wk,6wk\n')
         for i in range(0,len(confct_future)):
-            csvfile.write('{},{},{},{},{},{},{}\n'.format(iso_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), iso_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 7).strftime('%Y%m%d'), confct_by_wk[i][1], confct_future[i][1], confct_future[i][2], confct_future[i][3], confct_future[i][4]))
+            # csvfile.write('{},{},{},{},{},{},{}\n'.format(iso_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), iso_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 7).strftime('%Y%m%d'), confct_by_wk[i][1], confct_future[i][1], confct_future[i][2], confct_future[i][3], confct_future[i][4])) 
+            if confct_by_wk[i][0][1] == 52:
+                csvfile.write('{},{},{},{},{},{},{}\n'.format(mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), datetime.date(confct_by_wk[i][0][0], 12, 31).strftime('%Y%m%d'), confct_by_wk[i][1], confct_future[i][1], confct_future[i][2], confct_future[i][3], confct_future[i][4]))
+            else:
+                csvfile.write('{},{},{},{},{},{},{}\n'.format(mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 7).strftime('%Y%m%d'), confct_by_wk[i][1], confct_future[i][1], confct_future[i][2], confct_future[i][3], confct_future[i][4]))           
