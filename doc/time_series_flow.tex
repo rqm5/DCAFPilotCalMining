@@ -1,0 +1,81 @@
+% \documentclass{article}
+%% \usepackage[latin1]{inputenc}
+%% \usepackage{tikz}
+%% \usetikzlibrary{shapes,arrows}
+%% \usepackage{caption}
+%% \newcommand*{\h}{\hspace{5pt}}% for indentation
+%% \newcommand*{\hh}{\h\h}% double indentation
+%% \begin{document}
+\begin{figure}
+\begin{center}
+  % setting the typeface to sans serif and the font size to small
+  % the scope local to the environment
+  \sffamily
+  \footnotesize
+  \begin{tikzpicture}[auto, 
+      %decision/.style={diamond, draw=black, thick, fill=white,
+      %text width=8em, text badly centered,
+      %inner sep=1pt, font=\sffamily\small},
+      block_center/.style ={rectangle, draw=black, thick, fill=white,
+        text width=10em, text centered,
+        minimum height=4em},
+      block_left/.style ={rectangle, draw=black, thick, fill=white,
+        text width=16em, text ragged, minimum height=4em, inner sep=6pt},
+      block_noborder/.style ={rectangle, draw=none, thick, fill=none,
+        text width=12em, text centered, minimum height=1em},
+      block_assign/.style ={rectangle, draw=black, thick, fill=white,
+        text width=18em, text ragged, minimum height=3em, inner sep=6pt},
+      block_lost/.style ={rectangle, draw=black, thick, fill=white,
+        text width=16em, text ragged, minimum height=3em, inner sep=6pt},
+      line/.style ={draw, thick, -latex', shorten >=0pt}]
+    %
+    % 1. outlining the flowchart using the PGF/TikZ matrix funtion
+    \matrix [column sep=5mm,row sep=3mm] {
+      % enrollment - row 1
+      \node [block_center] (w1) {Dataset access records in week 1};
+      & \node [block_center] (w2) {Dataset access records in week 2};
+      & \node [block_center] (cf_dp) {Conference dump from database + schema}; 
+      \\
+      % enrollment - row 1'
+      \node [block_noborder] (ts1) {\verb|time_series.py|};
+      &
+      & \node [block_noborder] (cf_parser) {\verb|cms_conf_parser.py|}; \\
+      % enrollment - row 2
+      \node [block_center] (ts2) {A dataset's access count per week time series};
+      &
+      & \node [block_center] (cf_ct) {Conference count per week time series}; \\
+      % enrollment - row 2'
+      \node [block_noborder] (ts31) {\verb|time_series.py|}; 
+      & \node [block_noborder] (ts32) {\verb|time_series.py|}; 
+      & \node [block_noborder] (ts33) {\verb|time_series.py|}; \\
+      % enrollment - row 3
+      \node [block_center] (result1) {Seasonality};
+      & \node [block_center] (result2) {Cross correlation};
+      & \node [block_center] (result3) {Seasonality}; \\
+    };% end matrix
+    %
+    %
+    % 2. connecting nodes with paths
+    \begin{scope}[every path/.style=line]
+      % paths for enrollemnt rows
+      \path (w1)   -- (ts1);
+      \path (w2)   -- (ts1);
+      \path(ts1) -- (ts2);
+      \path (cf_dp) -- (cf_parser);
+      \path (cf_parser) -- (cf_ct);
+      % 
+      \path (ts2) -- (ts32); 
+      \path (cf_ct) -- (ts32);
+      \path (ts32) -- (result2);      
+      \path (ts2) -- (ts31); 
+      \path (ts31) -- (result1);
+      \path (cf_ct) -- (ts33); 
+      \path (ts33) -- (result3);
+    \end{scope}
+\end{tikzpicture}
+\captionof{figure}{Flowchart of Time Series Generation and Analysis}
+\label{chart1}
+\end{center}
+\end{figure}
+
+% \end{document}

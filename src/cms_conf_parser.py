@@ -2,12 +2,12 @@
 
 """
 This is a stand-alone python script, and run from src directory
-python cms_conf_parser.py --fdat ../data/cms_conf.csv.gz --fsch ../data/schema --fpsd ../data/cms_conf_parsed.csv --fccw ../data/cms_conf_ct_perweek.csv --fccf ../data/cms_conf_ct_future.csv
+python src/cms_conf_parser.py --indump data/conf/cms_conf.csv.gz --inschema data/conf/schema --outdir data/conf
 input:
 data/cms_conf.csv.gz: a csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
 data/schema: a schema file decribing the attributes of each conference record (see below)
 output:
-data/cms_conf_parsed.csv.gz: a csv.gz file with the schema as columns, conference records as rows (sorted by date), with the attributes in each record delimited by TAB.
+data/cms_conf_parsed.csv.gz: a csv.gz file with the schema as columns, conference records as rows (sorted by date), with the attributes in each record delimited by TAB. I.e. reorganize cms_conf.csv.gz in a cleaner way.
 data/cms_conf_ct_perweek.csv.gz: a csv.gz file with week and conf ct as columns, each record reprepsenting the week and the nb of conferences in the week, which delimited by TAB
 data/cms_conf_ct_future.csv.gz: a csv.gz file with week, conf ct in future 1 week, conf ct in future 4 weeks, and conf ct in future 12 weeks. 
 
@@ -36,7 +36,7 @@ import re
 import gzip
 import collections
 import csv
-
+import ordereddict
 
 def type_db2py(dbtype):
     """ convert from db types to python types
@@ -92,7 +92,8 @@ def parse_schema(fschema):
     """
     # schema
     lines = open(fschema).readlines()
-    attribute2type = collections.OrderedDict()
+    # attribute2type = collections.OrderedDict()
+    attribute2type = ordereddict.OrderedDict()
     for line in lines:
         pair = line.split(None, 1)
         # print line, pair
@@ -136,7 +137,8 @@ def parse_dataframe_by_split(fdataframe, attribute2type):
 
         assert(len(conf_items) <= len(schema)) # disallow more conf items than schema attributes. allow fewer conf items than schema attributes, because of missing value and the way I split into conferences; 
         if j_start == 0:
-            conf_dict =collections.OrderedDict()
+            # conf_dict =collections.OrderedDict()
+            conf_dict =ordereddict.OrderedDict()
         for j in range(0, len(conf_items)):
             conf_dict[schema[j+j_start]] = attribute2type[schema[j+j_start]](conf_items[j])  # convert the conf item to the attribute's type
 
@@ -193,11 +195,12 @@ def parse_dataframe_by_match_record(fdataframe, attribute2type):
     matches = re.finditer(conf_pattern, text)
     confs_list = []
     for match in matches:
-        confs_list.append(collections.OrderedDict(zip(schema, match.groups())))
+        # confs_list.append(collections.OrderedDict(zip(schema, match.groups())))
+        confs_list.append(ordereddict.OrderedDict(zip(schema, match.groups())))
 
 
     # convert the values in the dictionaries to correct types
-    confs_list = [collections.OrderedDict((k, attribute2type[k](v.strip())) for (k, v) in l.iteritems()) for l in confs_list]
+    confs_list = [ordereddict.OrderedDict((k, attribute2type[k](v.strip())) for (k, v) in l.iteritems()) for l in confs_list]
     
     return confs_list        
         
@@ -224,7 +227,8 @@ def group_confs_by_week(confs_list):
     grouped: a dict of (week, list of confs), 
     '''
 
-    grouped = collections.OrderedDict()
+    # grouped = collections.OrderedDict()
+    grouped = ordereddict.OrderedDict()
     for conf in confs_list:
         yearweek = conf['CONF_START'].isocalendar()[0:2]
         # print yearweek, type(yearweek)
@@ -285,7 +289,8 @@ def group_confs_by_myweek(confs_list):
     grouped: a dict of (week, list of confs), 
     '''
 
-    grouped = collections.OrderedDict()
+    # grouped = collections.OrderedDict()
+    grouped = ordereddict.OrderedDict()
     for conf in confs_list:
         yearweek = mycalendar(conf['CONF_START'])[0:2]
         # print yearweek, type(yearweek)
@@ -340,29 +345,28 @@ def count_confs_in_future(confct_by_wk, periods):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Parse some dataframe.')
-    parser.add_argument('--fdat', dest='fdat', help='input dataframe csv.gz file')
-    parser.add_argument('--fsch', dest='fsch', help='input schema file')
-    parser.add_argument('--fpsd', dest='fpsd', help='output parsed data csv.gz file')
-    parser.add_argument('--fccw', dest='fccw', help='output conf-ct-per-week csv.gz file')
-    parser.add_argument('--fccf', dest='fccf', help='output conf-ct-in-future-from-each-week csv.gz file')            
+    parser = argparse.ArgumentParser(description='Parses the conference data dump file into a conference count time series.')
+    parser.add_argument('--indump', dest='indump', help='a csv.gz file for conference data dump from a database')
+    parser.add_argument('--inschema', dest='inschema', help='a plain text file for the schema of the conference data dump file')
+    parser.add_argument('--outdir', dest='outdir', help='a dir for csv.gz files for conference count per week time series, for conference count for future weeks, and for parsed conference records')
     args = parser.parse_args()
 
 
     # 1. parse the data frame into list of conf dicts
     
-    attribute2type = parse_schema(args.fsch)
+    attribute2type = parse_schema(args.inschema)
+    # print attribute2type
 
     # two ways of parsing dataframe: (prefer the second way over the first)
     # by specifying separtors for separating records and fields, assume each field of a record only spans one line
-    # confs_list1 = parse_dataframe_by_split(args.fdat, attribute2type)
+    # confs_list1 = parse_dataframe_by_split(args.indump, attribute2type)
     # by matching each record and field.  allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
-    confs_list = parse_dataframe_by_match_record(args.fdat, attribute2type)    
+    confs_list = parse_dataframe_by_match_record(args.indump, attribute2type)    
 
     # Output the parsed result
 
     # print len(confs_list1)
-    print "There are {:d} conference records".format(len(confs_list))
+    print "There are {0:d} conference records".format(len(confs_list))
 
     # print "*******"
     # for conf in confs_list2:
@@ -371,10 +375,11 @@ if __name__ == '__main__':
 
     schema = attribute2type.keys()
     confs_list = sorted(confs_list, key=lambda k: k['CONF_START'])  # sort confs by date, for later grouping by week
-    with gzip.open(args.fpsd, 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=schema,  delimiter='\t')
-        writer.writeheader()
-        writer.writerows(confs_list)
+    csvfile = gzip.open(args.outdir + '/cms_conf_parsed.csv.gz', 'w')
+    writer = csv.DictWriter(csvfile, fieldnames=schema,  delimiter='\t')
+    csvfile.write(','.join(schema) + '\n')
+    writer.writerows(confs_list)
+    csvfile.close()
 
 
     # 2. group confs by week
@@ -398,24 +403,45 @@ if __name__ == '__main__':
     # for week, ct in confct_by_wk:
     #     print week, ct
 
-    with gzip.open(args.fccw, 'w') as csvfile:
-        csvfile.write('week,confct\n')
-        for week, ct in confct_by_wk:
-            csvfile.write('{},{}\n'.format(week, ct))
+    csvfile = gzip.open(args.outdir + '/cms_conf_ct_perweek.csv.gz', 'w')
+    csvfile.write('tstamp,confct\n')
+    for i in range(0,len(confct_by_wk)):
+        # for week, ct in confct_by_wk:
+    #     csvfile.write('{}-{},{}\n'.format(week, ct))
+        if confct_by_wk[i][0][1] == 52:
+            csvfile.write('{0}-{1},{2}\n'.format(mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), datetime.date(confct_by_wk[i][0][0], 12, 31).strftime('%Y%m%d'), confct_by_wk[i][1]))
+        else:
+            csvfile.write('{0}-{1},{2}\n'.format(mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 7).strftime('%Y%m%d'), confct_by_wk[i][1]))
+    csvfile.close()
 
     # 4. count confs in certain nb of future weeks, from each week
-    periods=[1,2,4,6] # for next few weeks
+    # periods=[1,2,4,6,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85] # for next few weeks
+    periods=[1,2,4,6,10,15,20,25,30,35,40,45,50,55,60,65,70] # for next few weeks
     confct_future = count_confs_in_future(confct_by_wk, periods)
         
     # print "***************"
     # for item in confct_future:
     #     print item
 
-    with gzip.open(args.fccf, 'w') as csvfile:
-        csvfile.write('tstamp,0wk,1wk,2wk,4wk,6wk\n')
-        for i in range(0,len(confct_future)):
-            # csvfile.write('{},{},{},{},{},{},{}\n'.format(iso_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), iso_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 7).strftime('%Y%m%d'), confct_by_wk[i][1], confct_future[i][1], confct_future[i][2], confct_future[i][3], confct_future[i][4])) 
-            if confct_by_wk[i][0][1] == 52:
-                csvfile.write('{}-{},{},{},{},{},{}\n'.format(mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), datetime.date(confct_by_wk[i][0][0], 12, 31).strftime('%Y%m%d'), confct_by_wk[i][1], confct_future[i][1], confct_future[i][2], confct_future[i][3], confct_future[i][4]))
-            else:
-                csvfile.write('{}-{},{},{},{},{},{}\n'.format(mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 7).strftime('%Y%m%d'), confct_by_wk[i][1], confct_future[i][1], confct_future[i][2], confct_future[i][3], confct_future[i][4]))           
+    csvfile = gzip.open(args.outdir + '/cms_conf_ct_future.csv.gz', 'w')
+    header = 'tstamp,0wk'
+    for i in range(0, len(periods)):
+        header = header + ',' + str(periods[i]) + 'wk'
+    csvfile.write(header + '\n')
+    for i in range(0,len(confct_future)):
+        # csvfile.write('{},{},{},{},{},{},{}\n'.format(iso_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), iso_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 7).strftime('%Y%m%d'), confct_by_wk[i][1], confct_future[i][1], confct_future[i][2], confct_future[i][3], confct_future[i][4])) 
+        if confct_by_wk[i][0][1] == 52:
+            csvfile.write('{0}-{1}'.format(
+                    mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), datetime.date(confct_by_wk[i][0][0], 12, 31).strftime('%Y%m%d')))
+            csvfile.write(',' + str(confct_by_wk[i][1]))
+            for j in range(1,len(confct_future[i])):
+                csvfile.write(',' + str(confct_future[i][j]))
+            csvfile.write('\n')
+        else:
+            csvfile.write('{0}-{1}'.format(
+                    mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 1).strftime('%Y%m%d'), mine_to_gregorian(confct_by_wk[i][0][0], confct_by_wk[i][0][1], 7).strftime('%Y%m%d')))
+            csvfile.write(',' + str(confct_by_wk[i][1]))
+            for j in range(1,len(confct_future[i])):
+                csvfile.write(',' + str(confct_future[i][j]))
+            csvfile.write('\n')
+    csvfile.close()

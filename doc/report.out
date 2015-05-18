@@ -1,0 +1,18 @@
+\BOOKMARK [1][]{section.1}{Overview}{}% 1
+\BOOKMARK [2][]{subsection.1.1}{Workflow and Design of the Project}{section.1}% 2
+\BOOKMARK [1][]{section.2}{Preparing Datasets}{}% 3
+\BOOKMARK [2][]{subsection.2.1}{CMS Conference Data}{section.2}% 4
+\BOOKMARK [2][]{subsection.2.2}{CMS Dataset Data}{section.2}% 5
+\BOOKMARK [2][]{subsection.2.3}{Merge Conference Data to Dataset Access Data}{section.2}% 6
+\BOOKMARK [1][]{section.3}{Modeling and Analysis for Predicting Dataset Usage}{}% 7
+\BOOKMARK [2][]{subsection.3.1}{Time Series Analysis}{section.3}% 8
+\BOOKMARK [3][]{subsubsection.3.1.1}{Seasonality}{subsection.3.1}% 9
+\BOOKMARK [3][]{subsubsection.3.1.2}{Cross Correlation}{subsection.3.1}% 10
+\BOOKMARK [2][]{subsection.3.2}{Classification}{section.3}% 11
+\BOOKMARK [3][]{subsubsection.3.2.1}{Importance Measurements Returned by Random Forest Classifier}{subsection.3.2}% 12
+\BOOKMARK [3][]{subsubsection.3.2.2}{Feature Ranking by Independence Testing}{subsection.3.2}% 13
+\BOOKMARK [3][]{subsubsection.3.2.3}{Experiments and Analysis}{subsection.3.2}% 14
+\BOOKMARK [1][]{section.4}{Conclusion}{}% 15
+\BOOKMARK [1][]{appendix.A}{Output when using both future conference counts and dataset access attributes as features}{}% 16
+\BOOKMARK [1][]{appendix.B}{Output when using only dataset access attributes as features}{}% 17
+\BOOKMARK [1][]{appendix.C}{Output when using mostly future conference counts as features}{}% 18

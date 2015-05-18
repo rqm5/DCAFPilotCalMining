@@ -1,0 +1,270 @@
+
+\begin{verbatim}
+  [tili@lxplus0079 testset]$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=''$datasetdir''/trainset/transform/201305-201404.csv.gz --scaler=StandardScaler --newdata=''$datasetdir''/testset/transform/dataframe-20140507-20140513.csv.gz --predict=''$datasetdir''/testset/predictions/pred.txt --scorer=accuracy,precision,recall,f1
+  RandomForestClassifier(bootstrap=True, compute_importances=None,
+  criterion='gini', max_depth=None, max_features='auto',
+  max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
+  min_samples_split=2, n_estimators=10, n_jobs=1,
+  oob_score=False, random_state=123, verbose=0)
+  /afs/cern.ch/user/t/tili/mywork/DCAFPilotCalMining/data/classification/tier2/merge_conf_tier2_201305-201404/trainset/transform/201305-201404.csv.gz gzip <type 'numpy.float32'>
+  /afs/cern.ch/user/t/tili/mywork/DCAFPilotCalMining/DCAFPIlot/slc6_amd64_gcc481/external/py2-pandas/0.15.1/lib/python2.6/site-packages/numpy-1.9.2-py2.6-linux-x86_64.egg/numpy/lib/utils.py:95: DeprecationWarning: `fprob` is deprecated!
+  fprob is deprecated in scipy 0.14, use stats.f.sf or special.fdtrc instead
+
+  warnings.warn(depdoc, DeprecationWarning)
+  feature ranking by ANOVA F test:
+  1. feature selection test p-value 0.000000, feature cpu
+  2. feature selection test p-value 0.000000, feature rel2_9
+  3. feature selection test p-value 0.000000, feature rel3_0
+  4. feature selection test p-value 0.000000, feature rel3_1
+  5. feature selection test p-value 0.000000, feature rel3_10
+  6. feature selection test p-value 0.000000, feature rel3_11
+  7. feature selection test p-value 0.000000, feature rel3_12
+  8. feature selection test p-value 0.000000, feature rel3_13
+  9. feature selection test p-value 0.000000, feature rel3_14
+  10. feature selection test p-value 0.000000, feature rel3_16
+  11. feature selection test p-value 0.000000, feature rel3_17
+  12. feature selection test p-value 0.000000, feature rel3_18
+  13. feature selection test p-value 0.000000, feature rel3_19
+  14. feature selection test p-value 0.000000, feature rel3_2
+  15. feature selection test p-value 0.000000, feature rel2_8
+  16. feature selection test p-value 0.000000, feature rel3_20
+  17. feature selection test p-value 0.000000, feature rel3_23
+  18. feature selection test p-value 0.000000, feature rel3_24
+  19. feature selection test p-value 0.000000, feature rel3_3
+  20. feature selection test p-value 0.000000, feature rel3_4
+  21. feature selection test p-value 0.000000, feature rel3_5
+  22. feature selection test p-value 0.000000, feature rel3_6
+  23. feature selection test p-value 0.000000, feature rel3_7
+  24. feature selection test p-value 0.000000, feature rel3_8
+  25. feature selection test p-value 0.000000, feature rel3_9
+  26. feature selection test p-value 0.000000, feature relt_0
+  27. feature selection test p-value 0.000000, feature relt_1
+  28. feature selection test p-value 0.000000, feature relt_2
+  29. feature selection test p-value 0.000000, feature size
+  30. feature selection test p-value 0.000000, feature rel3_22
+  31. feature selection test p-value 0.000000, feature rel2_7
+  32. feature selection test p-value 0.000000, feature rel3_15
+  33. feature selection test p-value 0.000000, feature rel2_5
+  34. feature selection test p-value 0.000000, feature creator
+  35. feature selection test p-value 0.000000, feature dataset
+  36. feature selection test p-value 0.000000, feature dbs
+  37. feature selection test p-value 0.000000, feature nevt
+  38. feature selection test p-value 0.000000, feature rel2_6
+  39. feature selection test p-value 0.000000, feature nlumis
+  40. feature selection test p-value 0.000000, feature nrel
+  41. feature selection test p-value 0.000000, feature proc_evts
+  42. feature selection test p-value 0.000000, feature rel1_0
+  43. feature selection test p-value 0.000000, feature rel1_1
+  44. feature selection test p-value 0.000000, feature rel1_2
+  45. feature selection test p-value 0.000000, feature rel1_3
+  46. feature selection test p-value 0.000000, feature nfiles
+  47. feature selection test p-value 0.000000, feature rel1_5
+  48. feature selection test p-value 0.000000, feature rel1_4
+  49. feature selection test p-value 0.000000, feature rel2_3
+  50. feature selection test p-value 0.000000, feature rel2_2
+  51. feature selection test p-value 0.000000, feature rel2_11
+  52. feature selection test p-value 0.000000, feature rel2_10
+  53. feature selection test p-value 0.000000, feature rel2_1
+  54. feature selection test p-value 0.000000, feature rel2_0
+  55. feature selection test p-value 0.000000, feature rel2_4
+  56. feature selection test p-value 0.000000, feature rel1_7
+  57. feature selection test p-value 0.000000, feature rel1_6
+  58. feature selection test p-value 0.000000, feature nblk
+  59. feature selection test p-value 0.000000, feature rel3_26
+  60. feature selection test p-value 0.000000, feature era
+  61. feature selection test p-value 0.000000, feature rel3_25
+  62. feature selection test p-value 0.000000, feature primds
+  63. feature selection test p-value 0.000000, feature 60wk
+  64. feature selection test p-value 0.000000, feature 65wk
+  65. feature selection test p-value 0.000000, feature 70wk
+  66. feature selection test p-value 0.000000, feature dtype
+  67. feature selection test p-value 0.000000, feature 55wk
+  68. feature selection test p-value 0.000001, feature 50wk
+  69. feature selection test p-value 0.000167, feature rel3_21
+  70. feature selection test p-value 0.001715, feature 30wk
+  71. feature selection test p-value 0.004668, feature 35wk
+  72. feature selection test p-value 0.033383, feature 45wk
+  73. feature selection test p-value 0.084018, feature parent
+  74. feature selection test p-value 0.309144, feature 10wk
+  75. feature selection test p-value 0.431895, feature 0wk
+  76. feature selection test p-value 0.480560, feature 1wk
+  77. feature selection test p-value 0.508494, feature 25wk
+  78. feature selection test p-value 0.580045, feature 4wk
+  79. feature selection test p-value 0.849305, feature 20wk
+  80. feature selection test p-value 0.859428, feature 15wk
+  81. feature selection test p-value 0.929217, feature procds
+  82. feature selection test p-value 0.945397, feature 2wk
+  83. feature selection test p-value 1.000000, feature 6wk
+  84. feature selection test p-value 1.000000, feature 40wk
+  85. feature selection test p-value -nan, feature tier
+  feature ranking by Chi Squared test:
+  1. feature selection test p-value 0.000000, feature cpu
+  2. feature selection test p-value 0.000000, feature rel2_9
+  3. feature selection test p-value 0.000000, feature rel3_0
+  4. feature selection test p-value 0.000000, feature rel3_1
+  5. feature selection test p-value 0.000000, feature rel3_10
+  6. feature selection test p-value 0.000000, feature rel3_11
+  7. feature selection test p-value 0.000000, feature rel3_12
+  8. feature selection test p-value 0.000000, feature rel3_13
+  9. feature selection test p-value 0.000000, feature rel3_14
+  10. feature selection test p-value 0.000000, feature rel3_16
+  11. feature selection test p-value 0.000000, feature rel3_17
+  12. feature selection test p-value 0.000000, feature rel3_18
+  13. feature selection test p-value 0.000000, feature rel3_19
+  14. feature selection test p-value 0.000000, feature rel3_2
+  15. feature selection test p-value 0.000000, feature rel2_8
+  16. feature selection test p-value 0.000000, feature rel3_20
+  17. feature selection test p-value 0.000000, feature rel3_23
+  18. feature selection test p-value 0.000000, feature rel3_24
+  19. feature selection test p-value 0.000000, feature rel3_3
+  20. feature selection test p-value 0.000000, feature rel3_4
+  21. feature selection test p-value 0.000000, feature rel3_5
+  22. feature selection test p-value 0.000000, feature rel3_6
+  23. feature selection test p-value 0.000000, feature rel3_7
+  24. feature selection test p-value 0.000000, feature rel3_8
+  25. feature selection test p-value 0.000000, feature rel3_9
+  26. feature selection test p-value 0.000000, feature relt_0
+  27. feature selection test p-value 0.000000, feature relt_1
+  28. feature selection test p-value 0.000000, feature relt_2
+  29. feature selection test p-value 0.000000, feature size
+  30. feature selection test p-value 0.000000, feature rel3_22
+  31. feature selection test p-value 0.000000, feature rel2_7
+  32. feature selection test p-value 0.000000, feature rel3_15
+  33. feature selection test p-value 0.000000, feature rel2_5
+  34. feature selection test p-value 0.000000, feature creator
+  35. feature selection test p-value 0.000000, feature dataset
+  36. feature selection test p-value 0.000000, feature dbs
+  37. feature selection test p-value 0.000000, feature era
+  38. feature selection test p-value 0.000000, feature nblk
+  39. feature selection test p-value 0.000000, feature nevt
+  40. feature selection test p-value 0.000000, feature rel2_6
+  41. feature selection test p-value 0.000000, feature nlumis
+  42. feature selection test p-value 0.000000, feature parent
+  43. feature selection test p-value 0.000000, feature primds
+  44. feature selection test p-value 0.000000, feature proc_evts
+  45. feature selection test p-value 0.000000, feature rel1_0
+  46. feature selection test p-value 0.000000, feature rel1_1
+  47. feature selection test p-value 0.000000, feature nfiles
+  48. feature selection test p-value 0.000000, feature rel1_3
+  49. feature selection test p-value 0.000000, feature rel1_2
+  50. feature selection test p-value 0.000000, feature rel2_3
+  51. feature selection test p-value 0.000000, feature rel2_2
+  52. feature selection test p-value 0.000000, feature rel2_11
+  53. feature selection test p-value 0.000000, feature rel2_10
+  54. feature selection test p-value 0.000000, feature rel2_1
+  55. feature selection test p-value 0.000000, feature rel2_0
+  56. feature selection test p-value 0.000000, feature rel1_7
+  57. feature selection test p-value 0.000000, feature rel2_4
+  58. feature selection test p-value 0.000000, feature rel1_6
+  59. feature selection test p-value 0.000000, feature rel1_4
+  60. feature selection test p-value 0.000000, feature rel1_5
+  61. feature selection test p-value 0.000000, feature procds
+  62. feature selection test p-value 0.000000, feature 70wk
+  63. feature selection test p-value 0.000000, feature 65wk
+  64. feature selection test p-value 0.000000, feature 60wk
+  65. feature selection test p-value 0.000000, feature nrel
+  66. feature selection test p-value 0.000000, feature 55wk
+  67. feature selection test p-value 0.000000, feature 30wk
+  68. feature selection test p-value 0.000000, feature rel3_26
+  69. feature selection test p-value 0.000000, feature rel3_25
+  70. feature selection test p-value 0.000000, feature 50wk
+  71. feature selection test p-value 0.000000, feature 35wk
+  72. feature selection test p-value 0.000000, feature 10wk
+  73. feature selection test p-value 0.000120, feature 45wk
+  74. feature selection test p-value 0.000184, feature rel3_21
+  75. feature selection test p-value 0.000192, feature 0wk
+  76. feature selection test p-value 0.000801, feature 1wk
+  77. feature selection test p-value 0.004897, feature 4wk
+  78. feature selection test p-value 0.008272, feature 25wk
+  79. feature selection test p-value 0.381273, feature 20wk
+  80. feature selection test p-value 0.385936, feature 15wk
+  81. feature selection test p-value 0.408017, feature 40wk
+  82. feature selection test p-value 0.412632, feature dtype
+  83. feature selection test p-value 0.736402, feature 2wk
+  84. feature selection test p-value 0.966743, feature 6wk
+  85. feature selection test p-value 1.000000, feature tier
+  /afs/cern.ch/user/t/tili/mywork/DCAFPilotCalMining/data/classification/tier2/merge_conf_tier2_201305-201404/testset/transform/dataframe-20140507-20140513.csv.gz gzip <type 'numpy.float32'>
+  Feature ranking:
+  1. importance 0.093759, feature rel3_9
+  2. importance 0.089306, feature rel3_5
+  3. importance 0.086117, feature relt_2
+  4. importance 0.084869, feature rel2_3
+  5. importance 0.080612, feature rel3_0
+  6. importance 0.080032, feature relt_0
+  7. importance 0.079352, feature rel2_5
+  8. importance 0.076952, feature rel3_2
+  9. importance 0.075827, feature rel1_3
+  10. importance 0.071182, feature rel3_17
+  11. importance 0.024409, feature proc_evts
+  12. importance 0.021641, feature cpu
+  13. importance 0.011592, feature rel1_5
+  14. importance 0.008654, feature nfiles
+  15. importance 0.007422, feature size
+  16. importance 0.006638, feature rel1_6
+  17. importance 0.004823, feature nblk
+  18. importance 0.004628, feature rel3_7
+  19. importance 0.004028, feature rel3_8
+  20. importance 0.003601, feature rel3_1
+  21. importance 0.003508, feature rel2_1
+  22. importance 0.002963, feature nlumis
+  23. importance 0.002915, feature rel2_0
+  24. importance 0.002912, feature rel3_3
+  25. importance 0.002881, feature 25wk
+  26. importance 0.002853, feature 10wk
+  27. importance 0.002794, feature rel1_4
+  28. importance 0.002709, feature rel2_2
+  29. importance 0.002637, feature rel1_2
+  30. importance 0.002509, feature 70wk
+  31. importance 0.002487, feature 65wk
+  32. importance 0.002467, feature rel3_13
+  33. importance 0.002433, feature rel3_4
+  34. importance 0.002317, feature 0wk
+  35. importance 0.002266, feature 55wk
+  36. importance 0.002211, feature 50wk
+  37. importance 0.002163, feature nevt
+  38. importance 0.002159, feature 35wk
+  39. importance 0.002114, feature rel3_6
+  40. importance 0.002062, feature rel3_11
+  41. importance 0.002027, feature parent
+  42. importance 0.001964, feature rel2_4
+  43. importance 0.001724, feature dataset
+  44. importance 0.001684, feature 1wk
+  45. importance 0.001623, feature rel1_0
+  46. importance 0.001620, feature 40wk
+  47. importance 0.001566, feature era
+  48. importance 0.001518, feature relt_1
+  49. importance 0.001487, feature creator
+  50. importance 0.001290, feature 30wk
+  51. importance 0.001289, feature rel1_7
+  52. importance 0.001251, feature 4wk
+  53. importance 0.001217, feature procds
+  54. importance 0.001200, feature primds
+  55. importance 0.001112, feature 2wk
+  56. importance 0.001004, feature rel2_9
+  57. importance 0.000995, feature 60wk
+  58. importance 0.000896, feature rel3_10
+  59. importance 0.000884, feature 20wk
+  60. importance 0.000830, feature 45wk
+  61. importance 0.000772, feature dbs
+  62. importance 0.000760, feature rel3_12
+  63. importance 0.000758, feature nrel
+  64. importance 0.000735, feature rel2_6
+  65. importance 0.000726, feature rel3_15
+  66. importance 0.000638, feature 15wk
+  67. importance 0.000575, feature rel3_14
+  68. importance 0.000540, feature 6wk
+  69. importance 0.000491, feature rel3_16
+  70. importance 0.000021, feature rel2_8
+  71. importance 0.000000, feature rel2_11
+  72. importance 0.000000, feature rel3_25
+  73. importance 0.000000, feature rel2_7
+  74. importance 0.000000, feature tier
+  75. importance 0.000000, feature rel1_1
+  76. importance 0.000000, feature rel2_10
+  77. importance 0.000000, feature rel3_18
+  78. importance 0.000000, feature rel3_19
+  79. importance 0.000000, feature rel3_20
+  80. importance 0.000000, feature rel3_21
+  81. importance 0.000000, feature dtype
+  82. importance 0.000000, feature rel3_22
+\end{verbatim}

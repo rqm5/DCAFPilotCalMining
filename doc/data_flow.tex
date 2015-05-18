@@ -1,0 +1,118 @@
+% \documentclass{article}
+%% \usepackage[latin1]{inputenc}
+%% \usepackage{tikz}
+%% \usetikzlibrary{shapes,arrows}
+%% \usepackage{caption}
+%% \newcommand*{\h}{\hspace{5pt}}% for indentation
+%% \newcommand*{\hh}{\h\h}% double indentation
+%% \begin{document}
+\begin{figure}
+  \begin{center}
+  % setting the typeface to sans serif and the font size to small
+  % the scope local to the environment
+  \sffamily
+  \footnotesize
+  \begin{tikzpicture}[auto, 
+      %decision/.style={diamond, draw=black, thick, fill=white,
+      %text width=8em, text badly centered,
+      %inner sep=1pt, font=\sffamily\small},
+      block_center/.style ={rectangle, draw=black, thick, fill=white,
+        text width=10em, text centered,
+        minimum height=4em},
+      block_left/.style ={rectangle, draw=black, thick, fill=white,
+        text width=16em, text ragged, minimum height=4em, inner sep=6pt},
+      block_noborder/.style ={rectangle, draw=none, thick, fill=none,
+        text width=12em, text centered, minimum height=1em},
+      block_assign/.style ={rectangle, draw=black, thick, fill=white,
+        text width=18em, text ragged, minimum height=3em, inner sep=6pt},
+      block_lost/.style ={rectangle, draw=black, thick, fill=white,
+        text width=16em, text ragged, minimum height=3em, inner sep=6pt},
+      line/.style ={draw, thick, -latex', shorten >=0pt}]
+    %
+    % 1. outlining the flowchart using the PGF/TikZ matrix funtion
+    \matrix [column sep=5mm,row sep=3mm] {
+      % enrollment - row 1
+      \node [block_center] (w1) {Dataset access records in week 1};
+      & \node [block_center] (cf_dp) {Conference dump from database + schema};
+      & \node [block_center] (w2) {Dataset access records in week 2}; \\        % enrollment - row 1'
+      \node [block_noborder] (split1) {\verb|select.py|};
+      & \node [block_noborder] (cf_parser) {\verb|cms_conf_parser.py|}; 
+      & \node [block_noborder] (split2) {\verb|select.py|}; \\
+      % enrollment - row 2
+      \node [block_center] (w1_ti) {Access records for datasets in some tier};
+      & \node [block_center] (cf_ct) {Conference count per week time series}; 
+      & \node [block_center] (w2_ti) {Access records for datasets in some tier}; \\
+      % enrollment - row 2'
+      \node [block_noborder] (merge_acc_conf1) {\verb|merge_access_conf.py|};
+      & 
+      & \node [block_noborder] (merge_acc_conf2) {\verb|merge_access_conf.py|}; \\
+      % enrollment - row 3
+      \node [block_center] (w1_cf) {Dataset access + conference count};
+      & 
+      & \node [block_center] (w2_cf) {Dataset access + conference count}; \\
+      % enrollment - row 3'
+      & \node [block_noborder] (merge_dfs) {\verb|merge_csv.py|}; 
+      & \\
+      % follow-up - row 4
+      & \node [block_center] (w12) {Week 1 and 2 combined};
+      & \node [block_noborder] (same1) {... ...}; \\
+      % enrollment - row 4'
+      & \node [block_noborder] (transform) {\verb|transform_csv.py|}; 
+      & \node [block_noborder] (same2) {\verb|transform_csv.py|};  \\
+      % follow-up - row 5
+      & \node [block_center] (trainset) {Train set (some cols dropped, outcome binarized)};
+      & \node [block_center] (testset) {Test set (some cols dropped, outcome binarized)}; \\
+      % follow-up - row 5'
+      & \node [block_noborder] (model) {\verb|model.py|};
+      & \\
+      % follow-up - row 6
+      & \node [block_center] (classifier) {Classifier + feature ranking + predictions on test set};
+      & \\
+      % follow-up - row 6'
+      & \node [block_noborder] (check_pred) {\verb|check_prediction.py|};
+      & \\
+      % follow-up - row 5
+      & \node [block_center] (test_perf) {Test performance};
+      & \\
+    };% end matrix
+    %
+    %
+    % 2. connecting nodes with paths
+    \begin{scope}[every path/.style=line]
+      % paths for enrollemnt rows
+      \path (w1)   -- (split1);
+      \path (split1)   -- (w1_ti);      
+      \path (w2)   -- (split2);
+      \path (split2)   -- (w2_ti);      
+      \path (cf_dp) -- (cf_parser);
+      \path (cf_parser) -- (cf_ct);
+      % 
+      \path (w1_ti) -- (merge_acc_conf1); 
+      \path (cf_ct) -- (merge_acc_conf1);
+      \path (merge_acc_conf1) -- (w1_cf);     
+      \path (w2_ti) -- (merge_acc_conf2);
+      \path (cf_ct) -- (merge_acc_conf2);            
+      \path (merge_acc_conf2) -- (w2_cf);      
+      %
+      \path (w1_cf) -- (merge_dfs);
+      \path (w2_cf) -- (merge_dfs);
+      \path (merge_dfs) -- (w12);
+      \path (same1) -- (same2);      
+      %
+      \path (w12) -- (transform);
+      \path (transform) -- (trainset);
+      \path (same2) -- (testset);
+      %
+      \path (trainset) -- (model);
+      \path (testset)  -- (model);
+      %
+      \path (model) -- (classifier);
+      \path (classifier) -- (check_pred);
+      \path (check_pred) -- (test_perf);      
+    \end{scope}
+  \end{tikzpicture}
+\captionof{figure}{Flowchart of Classification and Train/Test Set Generation}
+\label{chart2}
+\end{center}
+\end{figure}
+% \end{document}

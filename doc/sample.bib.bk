@@ -1,0 +1,41 @@
+@misc{web:vk,
+author = "Valentin Kuznetsov",
+title = "DCAF Pilot for CMS: pilot project for CMS computing data-mining \url{http://www.lepp.cornell.edu/~vk/Talks/Pilot1/it.html}",
+month = "February",
+year = "2015",
+url = "\url{http://www.lepp.cornell.edu/~vk/Talks/Pilot1/it.html}"
+},
+
+@misc{web:vkgithub,
+author = "Valentin Kuznetsov",
+title = "DMWM Analytics \url{https://github.com/dmwm/DMWMAnalytics}",
+month = "May",
+year = "2015",
+url = "\url{https://github.com/dmwm/DMWMAnalytics}"
+},
+
+@misc{web:tlgithub,
+author = "Ting Li",
+title = "DCAF Pilot Calendar Mining \url{https://github.com/tli12/DCAFPilotCalMining}",
+month = "May",
+year = "2015",
+url = "\url{https://github.com/tli12/DCAFPilotCalMining}"
+},
+
+
+@misc{web:slguide,
+author = "Scikit-Learn developers",
+title = "1.11.2.5. Feature importance evaluation, Scikit-Learn version 0.16.1 User Guide, \url{http://scikit-learn.org/stable/modules/ensemble.html#feature-importance-evaluation}",
+month = "May",
+year = "2015",
+url = "\url{http://scikit-learn.org/stable/modules/ensemble.html#feature-importance-evaluation}"
+},
+
+
+@misc{web:slcat,
+author = "Scikit-Learn developers",
+title = "Categorical split for decision tree, \url{https://github.com/scikit-learn/scikit-learn/pull/3346}",
+month = "May",
+year = "2015",
+url = "\url{https://github.com/scikit-learn/scikit-learn/pull/3346}"
+},

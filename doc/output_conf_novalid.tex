@@ -1,0 +1,90 @@
+\begin{verbatim}
+[tili@lxplus0079 testset]$ model --learner=RandomForestClassifier --idcol=id --target=target --train-file=''$datasetdir''/trainset/transform_conf/201305-201404.csv.gz --scaler=StandardSca\
+> ler --newdata=''$datasetdir''/testset/transform_conf/dataframe-20140507-20140513.csv.gz --predict=''$datasetdir''/testset/predictions_conf/pred.txt --scorer=accur\
+> acy,precision,recall,f1
+
+RandomForestClassifier(bootstrap=True, compute_importances=None,
+criterion='gini', max_depth=None, max_features='auto',
+max_leaf_nodes=None, min_density=None, min_samples_leaf=1,
+min_samples_split=2, n_estimators=10, n_jobs=1,
+oob_score=False, random_state=123, verbose=0)
+/afs/cern.ch/user/t/tili/mywork/DCAFPilotCalMining/data/classification/tier2/merge_conf_tier2_201305-201404/trainset/transform_conf/201305-201404.csv.gz gzip <type 'numpy.float32'>
+/afs/cern.ch/user/t/tili/mywork/DCAFPilotCalMining/DCAFPIlot/slc6_amd64_gcc481/external/py2-pandas/0.15.1/lib/python2.6/site-packages/numpy-1.9.2-py2.6-linux-x86_64.egg/numpy/lib/utils.py:95: DeprecationWarning: `fprob` is deprecated!
+fprob is deprecated in scipy 0.14, use stats.f.sf or special.fdtrc instead
+
+warnings.warn(depdoc, DeprecationWarning)
+
+Feature ranking by ANOVA F test:
+1. feature selection test p-value 0.000000, feature dataset
+2. feature selection test p-value 0.000000, feature dbs
+3. feature selection test p-value 0.000000, feature 60wk
+4. feature selection test p-value 0.000000, feature 65wk
+5. feature selection test p-value 0.000000, feature 70wk
+6. feature selection test p-value 0.000000, feature 55wk
+7. feature selection test p-value 0.000001, feature 50wk
+8. feature selection test p-value 0.001715, feature 30wk
+9. feature selection test p-value 0.004668, feature 35wk
+10. feature selection test p-value 0.033383, feature 45wk
+11. feature selection test p-value 0.309144, feature 10wk
+12. feature selection test p-value 0.431895, feature 0wk
+13. feature selection test p-value 0.480560, feature 1wk
+14. feature selection test p-value 0.508494, feature 25wk
+15. feature selection test p-value 0.580045, feature 4wk
+16. feature selection test p-value 0.849305, feature 20wk
+17. feature selection test p-value 0.859428, feature 15wk
+18. feature selection test p-value 0.945397, feature 2wk
+19. feature selection test p-value 1.000000, feature 6wk
+20. feature selection test p-value 1.000000, feature 40wk
+
+Feature ranking by Chi Squared test:
+1. feature selection test p-value 0.000000, feature dataset
+2. feature selection test p-value 0.000000, feature dbs
+3. feature selection test p-value 0.000000, feature 70wk
+4. feature selection test p-value 0.000000, feature 65wk
+5. feature selection test p-value 0.000000, feature 60wk
+6. feature selection test p-value 0.000000, feature 55wk
+7. feature selection test p-value 0.000000, feature 30wk
+8. feature selection test p-value 0.000000, feature 50wk
+9. feature selection test p-value 0.000000, feature 35wk
+10. feature selection test p-value 0.000000, feature 10wk
+11. feature selection test p-value 0.000120, feature 45wk
+12. feature selection test p-value 0.000192, feature 0wk
+13. feature selection test p-value 0.000801, feature 1wk
+14. feature selection test p-value 0.004897, feature 4wk
+15. feature selection test p-value 0.008272, feature 25wk
+16. feature selection test p-value 0.381273, feature 20wk
+17. feature selection test p-value 0.385936, feature 15wk
+18. feature selection test p-value 0.408017, feature 40wk
+19. feature selection test p-value 0.736402, feature 2wk
+20. feature selection test p-value 0.966743, feature 6wk
+/afs/cern.ch/user/t/tili/mywork/DCAFPilotCalMining/data/classification/tier2/merge_conf_tier2_201305-201404/testset/transform_conf/dataframe-20140507-20140513.csv.gz gzip <type 'numpy.float32'>
+
+Feature ranking by random forest classifier:
+1. importance 0.724537, feature dataset
+2. importance 0.178246, feature dbs
+3. importance 0.008233, feature 50wk
+4. importance 0.007089, feature 65wk
+5. importance 0.006662, feature 70wk
+6. importance 0.006617, feature 55wk
+7. importance 0.006465, feature 45wk
+8. importance 0.006123, feature 0wk
+9. importance 0.005947, feature 2wk
+10. importance 0.005602, feature 60wk
+11. importance 0.005536, feature 1wk
+12. importance 0.005083, feature 4wk
+13. importance 0.005015, feature 6wk
+14. importance 0.004994, feature 35wk
+15. importance 0.004759, feature 15wk
+16. importance 0.004361, feature 30wk
+17. importance 0.004266, feature 20wk
+18. importance 0.004029, feature 25wk
+19. importance 0.003225, feature 10wk
+20. importance 0.003212, feature 40wk
+
+[tili@lxplus0079 testset]$ check_prediction --fin=''$datasetdir''/testset/transform_conf/dataframe-20140507-20140513.csv.gz  --fpred=''$datasetdir''/testset/predictions_conf/pred.txt  --sco\
+> rer=accuracy,precision,recall,f1
+Score metric (accuracy_score): 0.960264900662
+Score metric (precision_score): 0.777777777778
+Score metric (recall_score): 0.636363636364
+Score metric (f1_score): 0.7
+\end{verbatim}
