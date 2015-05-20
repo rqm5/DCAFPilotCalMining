@@ -1,4 +1,4 @@
-%% This is file `elsarticle-template-1-num.tex',
+%%% This is file `elsarticle-template-1-num.tex',
 %%
 %% Copyright 2009 Elsevier Ltd
 %%
@@ -18,12 +18,27 @@
 %% $Id: elsarticle-template-1-num.tex 149 2009-10-08 05:01:15Z rishi $
 %% $URL: http://lenova.river-valley.com/svn/elsbst/trunk/elsarticle-template-1-num.tex $
 %%
-\documentclass[final, 12pt]{elsarticle}
+\documentclass[preprint, 12pt]{elsarticle}
 \usepackage{etoolbox}
+
 \makeatletter
 \patchcmd{\ps@pprintTitle}{\footnotesize\itshape
   Preprint submitted to \ifx\@journal\@empty Elsevier
   \else\@journal\fi\hfill\today}{\relax}{}{}
+\makeatother
+
+\usepackage{xpatch}
+
+% Patching the \hrule\vskip12pt out .. do it twice!!!
+\makeatletter
+\xpatchcmd{\pprintMaketitle}{%
+  \hrule\vskip12pt%
+}{}{\typeout{Success}}{}
+
+% Injection the date as a replacement of the 2nd `\hrule` stuff
+\xpatchcmd{\pprintMaketitle}{%
+  \hrule\vskip12pt%
+}{\@date}{\typeout{Success}}{}
 \makeatother
 
 %% Use the option review to obtain double line spacing
@@ -89,7 +104,9 @@
 
   %% Title, authors and addresses
 
-  \title{Using Conference Schedules for Dataset Usage Prediction}
+  \title{Using CMS Conference Schedules to Predict CMS Dataset Usage}
+
+  \date{May 18, 2015}
 
   %% use the tnoteref command within \title for footnotes;
   %% use the tnotetext command for the associated footnote;
@@ -110,15 +127,19 @@
   %% \address{Address\fnref{label3}}
   %% \fntext[label3]{}
 
-
   %% use optional labels to link authors explicitly to addresses:
   %% \author[label1,label2]{<author name>}
   %% \address[label1]{<address>}
   %% \address[label2]{<address>}
 
-  \author{Ting Li}
+  \author[cs]{Ting Li (tl524@cornell.edu)}
+  \author[phy]{Advisor: Valentin Kuznetsov (veknet@gmail.com)}
 
-  \address{Advisor: Valentin Kuznetsov}
+  \address[cs]{Computer Science Department, Cornell University}
+  \address[phy]{Physics Department, Cornell University}
+   
+
+  
   % \address{Cornell University}
 
 %  \begin{abstract}
@@ -134,13 +155,13 @@
 %% - problem statement
 %% - your task goals
 
-The Compact Muon Solenoid (CMS) is a large general-purpose particle physics detector, built on the Large Hadron Collider (LHC) at CERN in Switzerland and France. The goal of the CMS experiments is to investigate a wide range of physics, including the search for the Higgs boson, extra dimensions, and particles that could make up dark matter.
-The CMS experiments present challenges not only in terms of the physics to discover and the detector to build and operate, but also in terms of the data volume and the necessary computing resources. Data sets and resource requirements are at least an order of magnitude larger than in previous experiments.
-The CMS computing system relies on a distributed infrastructure of Grid resources, services and toolkits, to cope with computing requirements for storage, processing and analysis of data provided by the experiments.
+The Compact Muon Solenoid (CMS) is a large general-purpose particle physics detector, built on the Large Hadron Collider (LHC) at CERN in Switzerland and France. The goal of the CMS experiments is to investigate a wide range of physics, including the search for the Higgs boson, extra dimensions, and particles that could make up dark matter \cite{web:wiki}.
+The CMS experiments present challenges not only in terms of the physics to discover and the detector to build and operate, but also in terms of the data volume and the necessary computing resources. Data sets and resource requirements are at least an order of magnitude larger than in previous experiments \cite{web:cms}.
+The CMS computing system relies on a distributed infrastructure of Grid resources, services and toolkits, to cope with computing requirements for storage, processing and analysis of data provided by the experiments. 
 
 It will be beneficial if we can reliably predict the usages of the datasets used in the future experiments, so the data management staff can make enough replicates of the datasets, and deploy them to the storage centers nearby, and thus increase the throughput of data delivery to the researchers. 
 
-An approach to the prediction is to binarize the dataset access count in unit time (say, a week) into popularity labels, so that the problem becomes a classification one, and use the attributes from the CMS dataset access data as features. \cite{web:vk}
+An approach to the prediction is to binarize the dataset access count in unit time (say, a week) into popularity labels, so that the problem becomes a classification one, and use the attributes from the CMS dataset access data as features \cite{web:vk}.
 The approach can make sensible prediction in some experiments.
 The IT engineers, however, are facing ever increasing demand of data delivery, so they continue on searching for ways to achieve better prediction performance.
 
@@ -150,7 +171,11 @@ This project is supervised by Valentin Kuznetsov. I thank him for his guidance a
 
 \subsection{Workflow and Design of the Project}
 
-My modeling and analysis proceed in two directions: analyze the time series of the weekly conference count and of the weekly access counts to each dataset,  and evaluate weekly conference counts as new features added to the classification model.
+My modeling and analysis proceed in two directions:
+\begin{itemize}
+\item analyze the time series of the weekly conference count and the time series of the weekly access counts to each dataset,
+\item evaluate weekly conference counts as new features added to the classification model.
+\end{itemize}
 
 The diagrams \ref{chart1} and \ref{chart2} are the flowcharts of the simplified processes in the two types of modeling and analysis in this project.
 In the diagrams, program files are shown without being bounded by boxes, and the inputs, intermediates, and outputs of programs are shown inside boxes.
@@ -160,7 +185,7 @@ The purpose of making the diagrams is to show the design and workflow of the pro
 \input{time_series_flow.tex}
 \input{data_flow.tex}
 
-The programs which I have written are:
+The programs which I have written are the following. They are written in Python, and run under \verb|Python| 2.6.8 on 64-bit Scientific Linux CERN 6 (SLC6) on the \verb|lxplus.cern.ch| server \cite{web:lxplus}. I made them  available on GitHub \cite{web:tlgithub}. Here I include brief descriptions of the programs:
 
 \begin{itemize}
 \item \verb|cms_conf_parser.py|
@@ -175,16 +200,16 @@ The programs which I have written are:
 
   Output:
 
-  \verb|--outdir|: a directory for csv.gz files for conference count per week time series, for conference count for future weeks, and for parsed conference records
+  \verb|--outdir|: a directory containing  a csv.gz file for the output weekly conference count time series, a csv.gz file for the output conference counts up to some future weeks, and a csv.gz file for the output parsed conference records
   
   
 \item \verb|select.py|
 
-  It selects records from dataset access files whose attribute is some value.
+  It selects records from dataset access files whose attribute has some value.
 
   Input:
   
-  \verb|--indir|: a directory containing the csv.gz files for the input original dataset access data
+  \verb|--indir|: a directory containing the csv.gz files for the input dataset access data
 
   \verb|--attr|: an attribute to select by
 
@@ -192,7 +217,7 @@ The programs which I have written are:
 
   Output:
 
-  \verb|--outdir|: a directory cotaining csv.gz files for the output selected records
+  \verb|--outdir|: a directory containing csv.gz files for the output selected records
 
 \item \verb|merge_access_conf.py|
 
@@ -202,7 +227,7 @@ The programs which I have written are:
 
   \verb|--indir|: a directory containing the csv.gz files for the input dataset access data
 
-  \verb|--inconf|: a csv.gz file for the input conference count data
+  \verb|--inconf|: a csv.gz file for the input weekly conference count data
 
   Output:
 
@@ -216,18 +241,16 @@ The programs which I have written are:
   
   \verb|--indir|: a directory containing csv.gz files for the input dataset access data
 
-  \verb|--inconf|: a csv.gz file for the input conference count data
+  \verb|--inconf|: a csv.gz file for the input weekly conference count data
 
-  output:
+  Output:
 
   \verb|--outdir|: a directory containing csv.gz files for the output time series of each dataset, and image files for the plots of cross correlation and FFT of the time series
 
 \end{itemize}
 
 
-They are available on GitHub \cite{web:tlgithub}. %todo my github link
-
-The other programs were written by Valentin \cite{web:vkgithub}. I slighly modified his \verb|model.py| for  adding independence tests between each feature and the outcome, changing the split ratio of train and validation sets, fixing the random seeds, and changing the number of feature in the feature importance output.
+The other programs shown in the flowcharts were written by Valentin \cite{web:vkgithub}, which are part of package \verb|DCAFPilot| (version 0.0.42). I slightly modified his \verb|model.py| for  adding independence tests between each feature and the outcome, changing the split ratio of train and validation sets, fixing the random seeds, and changing the number of feature in the feature importance output.
 
 \section{Preparing Datasets}
 \label{S:2}
@@ -236,25 +259,21 @@ The other programs were written by Valentin \cite{web:vkgithub}. I slighly modif
 \subsection{CMS Conference Data}
 
 
-The CMS conference data are provided to me in a file, dumped from querying a database.
+I receive the CMS conference data in a file, which was dumped from querying a database.
 It contains a collection of conference records.
-Each record represents a conference, and consists of the conference's ID, name, cateogry, description, held time, held location, website link, etc.
+Each record represents a conference, and consists of the conference's ID, name, category, description, held time, held location, website link, etc.
 
 I perform the following processings on the conference data dump file, to generate the data needed for modeling and analysis:
 
 \begin{itemize}
   
-\item Parse the text in the conference data file into a list of dictionaries in Python, according to the conference attribute schema.
-This is implemented in \verb|cms_conf_parser.py|.
-The schema provides each attribute's name, type, and length if it is string valued.
-In the conference data file, each record occupies multiple lines, and records are separated by a blank line. The fields of a record are separated by a comma or a new line, and each field may have comma(s) inside, and may even be blank i.e. missing.
-The parsing of the dump file according to the schema is implemented by RegEx pattern matching.
-Each dicitonary in the list represents a conference record (or schedule), with keys being the conference attributes.
+\item In the conference data file, each record occupies multiple lines, and records are separated by a blank line, the fields of a record are separated by a comma or a new line, and each field may have comma(s) inside or may even be empty (that is, missing).
+Thus we need to  Parse the text in the conference data file, into a list of dictionaries in Python, with each dictionary representing a conference record.
+I perform the parsing according to the conference records' schema, which provide each attribute's name, type, and length when it is the string type.
+The parsing of the dump file according to the schema is implemented by regex pattern matching in \verb|cms_conf_parser.py|.
 
-\item Group the conference records by their held times in terms of weeks, and count the conferences in each week.
-This is implemented in \verb|cms_conf_parser.py|.
-The group by week is implemented by creating a dictionary, with a key being a string of a week, and its value being a list of conference records falling into that week.
-The output is a file, containing a time series of conference count per week over the weeks from the beginning of 2006 to mid September 2015 (505 weeks in total).
+\item After parsing, we count the conferences that are held in each week, and obtain a time series of weekly conference count over the weeks from the beginning of 2006 to mid September 2015 (505 weeks in total).  
+This is implemented in \verb|cms_conf_parser.py|, by grouping the conference records by week, which is in turn implemented by creating a dictionary, with a key being a week, and its value being a list of conference records falling into that week.
 Note that a week here is not a calendar year. The first day of a year is always the start of the first week of the year, and the last week of a year may contain more than 7 days.
 
 \end{itemize}
@@ -262,66 +281,59 @@ Note that a week here is not a calendar year. The first day of a year is always 
 
 \subsection{CMS Dataset Data}
 
-The CMS dataset access data are provided to me as a collection of files.
+I receive the CMS dataset data as a collection of files.
+Each file stores the records of datasets accessed in a week. In such a file, each record is for a dataset, and the fields of a record are the information about the record's dataset (such as its id, size) and the usage of the dataset during the file's week (such as number of its accesses and cpu time of its accesses in the week). \cite{web:vk} has explanations for the attributes of the records.
+The timestamp week for a file is not in the file's content, but is coded in the file's name, for example, \verb|dataframe-20130101-20130107.csv.gz|.
 
-Each file stores the records of datasets accessed in a week. The file is also named by the start and end dates of the week, for example, \verb|dataframe-20130101-20130107.csv.gz|, and there are no timestamp information in the file content.
-
-Each record in the file is for a dataset accessed in the week, and the fields of each record are the information about the dataset (such as id, size) and the usage of the dataset during a week (such as number of access, cpu time). \cite{web:vk} has explanations for the attributes of the record fields.
-% todo: add link to explaination of the attributes to his slides.
-
-The contents of the files are organized in csv file format, and hence easier to parse  than the files for conference data.
-Each record occupies a single line, and the records are separated by a newline character.
-The fields of a record are spearated by a comma.
-
+The files are easier to parse  than the files for conference data, because their contents are organized in a csv file format: 
+each record occupies a line, the records are separated by a newline character, and the fields of a record are separated by a comma.
 
 I perform the following processings on the dataset access files, to generate the data needed for modeling and analysis:
 
 \begin{itemize}
   
-\item Extract dataset access records for datasets belonging to Tier 2 and to Tier 3. This is implemented by list comprehension in \verb|select.py|.
-Note that
-tiers are levels in the hierachy of CMS distributed computing infrastructure. Tier sites store datasets.
-There are certain tiers whose sites store datasets dedicated to software testing, and the access to those datasets are unrelated to their usage by physicists. Thus in our project, those  datasets are of little interest, and 
-I use only datasets from Tier 2 (reconstructed data) and Tier 3 (analysis data). The datasets used in this report are from tier 2, and the processing, modeling and analysis for datasets from tier 3 are similar.
+\item Select records for datasets belonging to a tier.
+This is implemented by list comprehension in \verb|select.py|.
+Tiers are levels in the hierarchy of CMS distributed computing infrastructure. 
+There are certain tiers whose sites store datasets dedicated to software testing, and the access to those datasets is unrelated to their access by physicists. Thus those  datasets are of little interest to our project, and we focus only on datasets from Tier 2 (reconstructed data) and Tier 3 (analysis data).
+In this report, the datasets used for analysis and modeling come from Tier 2, and modeling and analysis for datasets from Tier 3 are similar.
 
-\item Group the records by datasets, and extract dataset access count per week.
+\item For each dataset, group its records from all the dataframe files, and extract weekly dataset access count and output a time series of weekly access count over the weeks when the dataset has records.
 This is implemented in \verb|time_series.py|.
-For each dataset, I group the records of the dataset in all the dataframe files, by using a dictionary, with each key being a dataset and its value being a list of the records of the dataset. A key identifies the dataset to which a record belongs, by the \verb|dataset| and \verb|dbs| attributes of the record.
-Then I extract the values of \verb|naccess| attribute from the records of the dataset.
-The \verb|naccess| attribute in a dataset access record is the number of accesses to a dataset, reported by PopularityDB
-The output is  a time series of access count per week over weeks for each dataset.
+The grouping is implemented by using a dictionary, with each key being a dataset and its value being a list of the records of the dataset.
+For a record, the dataset it belongs to is identified by the \verb|dataset| and \verb|dbs| attributes,
+and the access count to the record's dataset in the record's week is the value of the \verb|naccess| attribute.
+
 
 \end{itemize}
 
-\subsection{Merge Conference Data to Dataset Access Data}
+\subsection{Add Conference Counts to Dataset Access Records in the same week}
 
-In the following section for modeling the problem as a classification one, we  merge the conference data to the dataset data.
-We suspect that the future conference shedules may influence users' current overall access frequency to the datasets, and because they are scheduled for the future, their information is available for predicting future accesses to the datasets.
+For modeling the problem as a classification one in a later section, we merge the conference data to the dataset data.
+To each dataset access record, I add the following new fields: the conference counts in the same week as the dataset access record, and the accumulated conference counts up to some future weeks.
+This needs to find the corresponding conference count for a given week, which is implemented by matching the timestamp of a dataset access record to the timestamp of a conference count, again a string pattern matching problem.
+This is implemented in \verb|merge_access_conf.py|.
 
-To each dataset access record, I add the following new fields: the conference counts in the same week as the dataset access record, and in some future weeks.
-For a record in the dataset access data, the way to find the corresponding record in the conference data is to match their timestamps.
-Note that the timestamps of their records do not store in the same way however. The timestamp of a record in a dataset file is in the filename, while the timstamp of a record in the conference count file is in a field of the record.
-Since the timestamps are represented as strings, the matching between the timestamps is a pattern matching problem. This is implemented in \verb|merge_access_conf.py|.
-
-
-\section{Modeling and Analysis for Predicting Dataset Usage}
+\section{Time Series Analysis}
 
 %% - plots confirming the study
 %% - metrics you choose
 %% - description of analysis
 %% - analysis results
 
+
 As mentioned in the Overview section,
 my task is to study whether and how conference data can be used, possibly with CMS dataset data, for predicting future dataset usage.
-My study has been going in two directions, which differ in whether and how we take into account the time stamps of the CMS dataset records and of conference schedules.
+My study has been going in two directions, which differ in whether and how we take into account the timestamps of the CMS dataset records and of conference schedules.
 
-\subsection{Time Series Analysis}
+In the first direction, I analyze the relation between two time series: the weekly conference count, and an individual dataset's weekly access count.
 
-In this direction, I analyze the relation between two time series indexed by weeks: conference count per week, and dataset access count per week (given as values of the \verb|naccess| attribute from CMS dataset records).
+Note that:
 
-I consider the time series for dataset access count, one dataset at a time.
+\begin{itemize}
 
-There are 3279 datasets in Tier 2, and I do not consider them all for the following reasons.
+  \item
+There are 3279 datasets in Tier 2, but I do not consider them all for the following reasons.
 
 Different datasets have different numbers of records.
 For time series analysis purpose, I only consider those datasets which have more than $10$ records. There are $237$ of them.
@@ -330,81 +342,86 @@ The histogram of dataset lengths is in Figure \ref{len}.
  
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.4]{../data/tier/2/datasets/dataset_3279_lengths_hist.pdf}
+\includegraphics[scale=0.5]{../data/timeseries/datasets/dataset_3279_lengths_hist.pdf}
 \end{center}
 \caption{Histogram of lengths of dataset access count series}
 \label{len}
 \end{figure}
    
  
-The \verb|naccess| attribute of some datasets are constan (e.g. $0$), which makes cross-correlation become invalid, and fourier transform to be a single spike at frequency $0$. Prediction of \verb|naccess| of such datasets is also trivial. Therefore I remove such datasets.
+The \verb|naccess| attribute of some datasets are constant (for example, $0$), which makes cross-correlation become invalid, and Fourier transform to be a single spike at frequency $0$. Prediction of \verb|naccess| of such datasets is also trivial. Therefore I remove such datasets.
 There are $2973$ datasets whose \verb|naccess| attributes are constant, and $2959$ of them are constantly $0$.
 The maximum, minimum, median and standard deviation of variances of \verb|naccess| attribute values among the datasets are $826207739.67, 0, 0$, and $22326593.86$.
 
-After the selection of datasets by the above two criterions, there are $125$ datasets remaining for the time series analysis.
+After filtering datasets by the above two criterions, $125$ datasets remain for the time series analysis.
 
+\item
 The records of a dataset can be missing for some weeks between its existing records in other weeks. For the purpose of time series analysis, I deal with the missing values by filling with $0$ for \verb|naccess| in missing weeks.
 
+\end{itemize}
 
-\subsubsection{Seasonality}
+\subsection{Seasonality}
 
 It is our original guess that conference schedules and dataset access may expose seasonalities or periodicities, due to holidays and vacations.
 If it were true, we then would like to use their seasonalities or periodicities to simplify our modeling.
 
-Seasonality is not obvious in either the plot of the conference count series  or an arbitrary dataset access series however.
-An alternative way to study seasonality in a time series is to calculate discrete Fourier Transform on the time series by the Fast Fourier Transform algorithm, and search for significant spikes that represent the frequencies of seasonalities.
+It is not obvious to identify seasonality in either the plot of the conference count series  or an arbitrary dataset access series however.
+An alternative way to study seasonality in a time series is to calculate discrete Fourier transform on the time series by the fast Fourier transform algorithm, and search for significant spikes that represent the frequencies of seasonalities.
 I calculate the FFT of a time series using numpy.fft.rfft().
- 
-Figure \ref{cffft} is the plot of the DFT of the conference count series, and  \ref{dsfft1} and \ref{dsfft2} the DFT of some dataset access series.
+Existence of noises in a time series usually leads to spurious spikes in its DFT series. Picking out the highest spikes requires smoothing the series with trial and error.
+Thus I prefer visually checking over automatically choosing the highest spikes.
+
+
+Figure \ref{cffft} is the plot of the DFT of the conference count series, and  \ref{dsfft1} and \ref{dsfft2} the DFT of some datasets' access count series.
 
 \begin{figure}
 \begin{center} 
-\includegraphics[scale=0.4]{../data/tier/2/datasets/conf_ct_perweek_505fft.pdf}
+\includegraphics[scale=0.5]{../data/timeseries/datasets/conf_ct_perweek_505fft.pdf}
 \end{center}
-\caption{DFT of conference count per week time series}
+\caption{DFT of weekly conference count time series}
 \label{cffft}
 \end{figure}
 
+In the DFT plot \ref{cffft} of the conference count series, the highest spike occurs at the first frequency (that is, frequency $1/505$, where $505$ is the length of the time series in weeks) , which does not imply periodicity, because it corresponds to the whole time domain of the time series ($505$ weeks from the beginning of 2013 to the middle of September 2015). The second highest spike occurs at the 10th frequency (that is, frequency $10/505$), which corresponds to a time period of $505/10 = 50.5$ weeks, roughly a year. This confirms our initial guess of seasonality due to holidays. Since the spike at the first frequency is so dominant, and the second highest spike is not much higher than the other spikes, the time series itself exhibit only slightly periodicity from the second highest spike.
+
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.4]{../data/tier/2/datasets/471188_1_116_fft.pdf}
+\includegraphics[scale=0.5]{../data/timeseries/datasets/471188_1_116_fft.pdf}
 \end{center}
-\caption{DFT of access count per week time series  of a dataset}
+\caption{DFT of weekly access count time series  of a dataset}
 \label{dsfft1}
 \end{figure}
 
+
+In the DFT plot \ref{dsfft1} of the access series of the dataset (471188,1), the highest spike occurs at the 8th frequency (that is, frequency $8/116$, where $116$ is the length of the time series in weeks), which corresponds to a time period of $116/8 = 15$ weeks. This coincides with the observation of a periodicity between 10 and 20 weeks from the plot of the time series itself.
+
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.4]{../data/tier/2/datasets/701364_2_116_fft.pdf}
+\includegraphics[scale=0.5]{../data/timeseries/datasets/701364_2_116_fft.pdf}
 \end{center}
-\caption{DFT of access count per week time series of a dataset}
+\caption{DFT of weekly access count time series of a dataset}
 \label{dsfft2}
 \end{figure}
 
-A time series usually has more or less noises, which leads to spurious spikes in its DFT series. Picking out the highest spikes requires smoothing the series with trial and error.
-Thus I prefer visually checking over automatically choosing the highest spikes.
 
-In the DFT plot of the conference count series, the highest spike occurs at the first frequency (i.e. frequency $1/505$, where $505$ is the length of the time series in weeks) , which does not correspond to an actual time period because it corresponds to the whole time period of the time series ($505$ weeks from the beginning of 2013 to the middle of September 2015). The second highest spike occurs at the 10th fequency (i.e. frequency $10/505$), which corresponds to a time period of $505/10 = 50.5$ weeks, roughly a year. This confirms our intial guess of seasonality due to holidays. Since the spike at the first frequency is so dominant, and the second highest spike is not much higher than the other spikes, the time series itself exhibit only slightly periodicity from the second highest spike.
+In the DFT plot \ref{dsfft2} of the access series of the dataset (701364,2), there is no spike significantly higher than the others. So there seems no significant seasonality in the dataset access series.
 
-In the DFT plot of the access series of the dataset (471188,1), the highest spike occurs at the 8th frequency (i.e. frequency $8/116$, where $116$ is the length of the time series in weeks), which corresponds to a time period of $116/8 = 15$ weeks. This coincides with the observation of a periodicity between 10 and 20 weeks from the plot of the time series itself.
-
-In the DFT plot of the access series of the dataset (701364,2), there is no spike significantly higher than the others. So there seems no significant seasonality in the dataset access series.
-
-The DFT plot varies from dataset to dataset, and there seems not guruantee to find seasonality in them.
+The DFT plot varies from dataset to dataset, and there seems not guarantee to find seasonality in them.
 
 Neither is it clear yet how to relate the seasonalities of the dataset access series with that of the conference count series.
 If both the conference count series and an individual dataset access count series are both periodic,
-we may limit our study to a time interval whose length is the common least multiple of their periods, instead of the entire time intervals where the two time serires were created/defined.
+we may limit our study to a time interval whose length is the common least multiple of their periods, instead of the entire time intervals where the two time series were created/defined.
 
 
-\subsubsection{Cross Correlation}
+\subsection{Cross Correlation}
 
-The cross correlation between the time series of a data set's \verb|naccess| attribute, and the conference count time series, over lags ranging between $-50$ and $50$ with step $1$. At each lag, the cross correlation is calculated by scipy.stats.stats.pearsonr(). Besides cross correlation, it also returns a p-value for testing a null hypothesis that two series are uncorrelated. 
-The plots \ref{cor1}, \ref{cor2} and \ref{cor3} are examples of the \verb|naccess| series of some dataset, the conference count series, and the cross correlation between them.
+I calculate the cross correlation between  an individual dataset's access count series and the conference count series, over lags ranging between $-90$ and $90$ with step $1$. At each lag, I call \verb|scipy.stats.stats.pearsonr()| to calculate a cross correlation, and besides a cross correlation, it also returns a p-value for testing a null hypothesis that the two series are uncorrelated at the lag.
+
+The plots \ref{cor1}, \ref{cor2} and \ref{cor3} are the cross correlation between the access count series of some exemplar datasets and the conference count series.
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.4]{../data/tier/2/datasets/471188_1_365.pdf}
+\includegraphics[scale=0.5]{../data/timeseries/datasets/471188_1_365.pdf}
 \end{center}
 \caption{Cross correlation between the conference count series and the access count series of a dataset}
 \label{cor1}
@@ -412,7 +429,7 @@ The plots \ref{cor1}, \ref{cor2} and \ref{cor3} are examples of the \verb|nacces
 
 \begin{figure}
 \begin{center}   
-\includegraphics[scale=0.4]{../data/tier/2/datasets/701364_2_364.pdf}
+\includegraphics[scale=0.5]{../data/timeseries/datasets/701364_2_364.pdf}
 \end{center}
 \caption{Cross correlation between the conference count series and the access count series of a dataset}
 \label{cor2}
@@ -420,105 +437,108 @@ The plots \ref{cor1}, \ref{cor2} and \ref{cor3} are examples of the \verb|nacces
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.4]{../data/tier/2/datasets/7686105_0_372.pdf}
+\includegraphics[scale=0.5]{../data/timeseries/datasets/7686105_0_372.pdf}
 \end{center}
 \caption{Cross correlation between the conference count series and the access count series of a dataset}
 \label{cor3}
 \end{figure}
 
 
-The plots show that the lag where the highest cross corrleation in magnitude occurs varies with different datasets, and can be either positive lags (e.g. the plot for datasets \verb|(471188,1)| and \verb|(701364,2)|), or negative lags (e.g. the plot for dataset \verb|(7686105,0)|).
+The plots show that the lag where the highest cross correlation in magnitude occurs varies with different datasets, and can be either positive lags (for example, the plot for datasets \verb|(471188,1)| and \verb|(701364,2)|), or negative lags (for example, the plot for dataset \verb|(7686105,0)|).
 Cross correlation peaking at a positive lag means that future conference schedules can lead the current dataset access, while peaking at a negative lag means that past conferences can still have residual influence on the current dataset access.
 
 
-The plot \ref{laghist} is the histogram of such lags with p-values smaller than 0.05 (indicating the uncorrelated null is rejected with significance level 0.05), which shows that cross correlation achieves its maximum most probably around $75$ lags in weeks (roughly one year and a half), and at the lags  $65, 85, 40, 50, 60$, and $5$ with decreasing frequencies:
+The plot \ref{laghist} is the histogram of such lags with p-values smaller than 0.05 (indicating the uncorrelated null is rejected with significance level 0.05). It shows that cross correlation achieves its maximum most probably around $75$ lags in weeks (roughly one year and a half), and with decreasing frequencies at the lags  $65, 85, 40, 50, 60$, and $5$:
  
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.4]{../data/tier/2/datasets/lag_144_hist.pdf}
+\includegraphics[scale=0.5]{../data/timeseries/datasets/lag_144_hist.pdf}
 \end{center}
 \caption{Histogram of lags with maximum cross correlation}
 \label{laghist}
 \end{figure}
 
-Based on the cross correlation analysis, for a given dataset, we can build a prediction model  by regressing the dataset access count in each week on future conference counts in some weeks away by the lags chosen from the cross correlation analysis).
-The potential draw back of such modeling may be due to:
+For a given dataset, we can build a prediction model, by regressing the dataset weekly access count on conference counts in some future weeks away by the lags chosen from the cross correlation analysis.
+There are potential drawbacks of such modeling:
 
 \begin{itemize}
   
-\item We assume the relation between dataset access count and future conference counts are the same over the time, which is something like or similar to stationarity: the distribution of a week's dataset access count given future weeks' conference counts is the same across the weeks. After building such models, we lose track of time.
-Without the stationary assumption, it is unclear yet how to build a model that forecasts the dataset access count series from the conference count series, and captures the nonstationary relation between the two time series.
-It will be good to test the stationary assumption nonetheless.
+\item We assume the relation between dataset access count and future conference counts are the same over the time, which is something like or similar to stationarity: the distribution of the dataset weekly access count given the future weeks' conference counts is the same across the weeks. After building such models, we lose track of time.
+Without the stationary assumption, it remains to build a forecast model that can capture the nonstationarity in the relation between the two time series.
+In any case, it will be good to test if the stationary assumption holds up front.
 
-\item It does not make use of the other attributes from CMS dataset data, except using the dataset access count as the outcome, and the dataset access timestamp for matching with the future conference counts.
+\item It does not make use of the other attributes from CMS dataset data, except using the dataset access count as the outcome.
 
 \end{itemize}
 
-\subsection{Classification}
+\section{Classification}
 
-In this subsection, we simplify the quantitative outcome, i.e. the weekly dataset access count, to a qualitative popularity class label, by binarizing the counts at a threshod 100.
-% choose threshold for output target? by seeing histogram of the output target in train set, and by requirement such as how much percentage of dataset should be positive at a time (not necessarily 50%) (since he set it to be 100, there must be a reason? so don't change the threshold?)?
+In this section, we consider a different direction from time series analysis.
+
+We simplify the quantitative outcome, that is, the weekly dataset access count, to a qualitative popularity class label, by binarizing the counts at a threshold 100.
+% choose threshold for output target? by seeing histogram of the output target in train set, and by requirement such as how much percentage of dataset should be positive at a time (not necessarily 50%) (since he set it to be 100, there must be a reason? so don't change the threshold?)? 
+% threshold is fixed for  all weeks, because popularity criterion is same for all weeks.
 This changes the problem from a regression one to a classification one, potentially increasing the generalization ability of the trained model.
 % try regression instead of classification?
 % is the high dim of features may be a problem more to regression than to classification? but for random forest regressor?
 
+Moreover, we make the following stationary assumption:
+within a certain period, the conditional distribution of the dataset popularity binary outcome on the features (that is, future conference counts and other dataset attributes from CMS dataset data, see below) changes little over time, and can be approximately seen as being stationary.
+So we drop the timestamps from the data after combining the conference counts and the dataset access records.
+For example,
+we assume the length of such a period can be around one year (about 52 weeks), and choose to train on the data from the May 2013 to April 2014, and test on the data in the following week after April 2014.
 
-Moreover, we make the following assumptions:
-
-\begin{itemize}
-  
-\item Seasonality:
-Assume the conference count series and each dataset popularity label series are periodic, say, with 1 year (52 weeks) being their common (least)  multiple.
-We choose to train on the data from the May 2013 to April 2014, and test on the data in the following week after April 2014.
-
-\item Stationarity:
-  the relation between the dataset popularity label,  and conference count and other dataset attributes from CMS dataset data is stationary, i.e. does not change over time. So we drop the timestamps from the data after combining the conference counts and the dataset access records.
-  
-\end{itemize}
-
+ 
 % - Assume all the datasets follow the same model. So we further drop the dataset id (\verb|dataset|, \verb|dbs|).
 % he uses dataset id as features (categorial features) for training RF classifier.
 
-Some notes:
+\subsection{Candidate Features}
 
-\begin{itemize}
+When choosing the candidate features to be considered in the classification problem, I would like to consider all that are available, and might later perform feature selection as needed.
 
- \item
-When I initially chose the feautres used in the classification problem, I would like to consider all the available information, and might later perform feature selection as needed. Thus the features are the future conference counts weeks away by lags chosen from the cross correlation analysis of time series, and the attributes in CMS dataset data that are available at the time of prediction.
+The candidate features are the future conference counts weeks away by lags chosen from the cross correlation analysis of time series, and the attributes in CMS dataset data that are available at the time of prediction.
 
-The conference count per week can change dramatically, so instead of using them directly, I use more stable features which are the accumulated future conference counts up to $1, 2, 4, 6, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65$, and $70$ weeks. The number of the weeks are chosen, somehow based on the lags at which the cross correlation between conference count and dataset access count achieve high (see the previous section).
+We consider the future conference counts as candidate features, because we suspect that the future conference schedules may influence current dataset access counts, and they are available for predicting accesses to the datasets.
 
-Variables whose values are not available before the time to predict for, should be dropped from features.
-These have been singled out by Valentin in his demo examples of using the his programs.
+Not all attributes from the dataset access records have their values available before the time to predict for.
 For example,
-\verb|naccess| must obviously be dropped.
-So are \verb|nusers| (the number of users*days to a dataset, reported by PopularityDB), and \verb|totcpu| (the number of cpu hours to accessed dataset, reported by PopularityDB).
+\verb|naccess| is what we generate the binary outcome directly from, so it must obviously be dropped.
+So are \verb|nusers| (the number of users $*$ days to a dataset, reported by PopularityDB), and \verb|totcpu| (the number of cpu hours to accessed dataset, reported by PopularityDB).
+Valentin  singled them out in his demo examples of using his programs \cite{web:vk}.
 % manual feature selection, which depends on relation to outcome:
 % does cpu and proc_events relate to naccess, and should be dropped? they both have high importance in random forest.
 % id is dropped because specified as id to model?
 % dataset and dbs are both categorical, and useful for classifying popular and unpopular.
 
-\item
-Classifier, feature transformation, feature selection and ranking may depend on feature type (categorical, ordered, numerical, ...), and may not work with some feature types.
-Some features from CMS dataset data seem to be categorical, e.g. \verb|dataset|, \verb|dbs|, \verb|rel*|, and more (todo).
-In the data files, all the features (including categorical ones) are coded in numerical values, which can be problematic if not handled correctly.
+The weekly conference count can change dramatically, so instead of using them directly, I use more stable features which are the accumulated future conference counts up to $1, 2, 4, 6, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65$, and $70$ weeks. The number of the weeks are chosen somehow based on the lags at which the cross correlation between conference count series and dataset access count series is high (see the previous section).
 
-\item
-We are intersted more in popular class than the unpopular one, so we choose classification performance measures that more focus on the positive class:  accuracy, precision, recall and $F1$ scorers.
 
+\subsection{Feature Types}
+
+Classifier, feature transformation, feature selection and ranking may work with some feature types (categorical, ordered, numerical, ...), and not with other feature types.
+
+Some features from CMS dataset data seem to be categorical, for example, \verb|dataset|, \verb|dbs|, and \verb|rel*|.
+In the dataset access files, however, all the features (including categorical ones) are coded in numerical values.
+This can be problematic if not handled correctly.
   
-\end{itemize}
+Decision trees and therefore random forest can take categorical features. %esplly for binary outcome, c.f. hastie $9.2.4
+Scikit-Learn does not directly support categorical features in trees or forests however \cite{web:slcat}. % how to specify a feature is categorical instead of numerical to scikit learn algorithms?
+If categorical features are coded as numbers, which imposes a non-existing ordering on the categorical values,
+the random forest training algorithm will rely on that ordering,  and the trained random forest classifier will be misleading in terms of interpretation and have more overfitting to the training data.
+% Feature importances calculated in random forest classifier may not work for numerically coded categorical features?
+
+It may also be misleading to apply numerical feature transformation (such as standardization of features  to have zero mean and unit variance) on  categorical features that are numerically coded.
+The random forest training algorithm theoretically does not depend on standardization, because standardization does not change the ordering between the feature values.
+If we use random forest for classification, it seems better not to do standardization in preprocessing. (When I set  \verb|scaler=None| (or just not specify the option) to the program \verb|model.py|, the program will not predict on the test set.)
+% Q: how to pass none to scaler. in "model.py", there is a test "if opts.scaler". 
 
 
-There are different ways to rank the features in a classification problem.
+\subsection{Ranking Sets of Features}
 
-\subsubsection{Importance Measurements Returned by Random Forest Classifier}
-% instead of using random forest,  check if conf count is related or important to the classification or regression, by some other ways?
+We can compare different sets of features, by using them to train classifiers, and comparing the classifiers' test performances.
+Here I train random forest classifiers by calling \verb|model.py|, which in turn calls the learning algorithm implemented in the Scikit-Learn library by the class \verb|sklearn.ensemble.RandomForestClassifier|.
 
-When a random forest classifier make predictions on a test set,
-the relative rank (i.e. depth) of a feature used as a decision node in a tree can be used to assess the relative importance of that feature with respect to the predictability of the target variable. Features used at the top of the tree contribute to the final prediction decision of a larger fraction of the input samples. The expected fraction of the samples they contribute to can thus be used as an estimate of the relative importance of the features. \cite{web:slguide}
-
-I train random forest classifiers by calling the CMS program \verb|model.py|, which in turn calls the learning algorithm implemented in the Scikit-Learn library by the class \verb|sklearn.ensemble.RandomForestClassifier|.
+We are interested more in the popular class (that is, the positive class) than the unpopular one (that is, the negative class), so we choose classification performance measures that more focus on the positive class:  accuracy, precision, recall and $F1$ scorers.
 
 Note:
 
@@ -527,36 +547,19 @@ Note:
 \item I use the default complexity settings of a random forest classifier based on the empirical recommendations in the library's user guide.
 In the default settings,
 a random forest has 10 random trees, 
-each tree is allowed to be contructed without constraints on its complexity (depth), and
-each split at a node is determined by a randomly chose subset of features, the number of which is the square root of the number of all the features.
+each tree is allowed to be constructed without constraints on its complexity (depth), and
+the number of the candidate features randomly chosen at each node split is the square root of the number of all the features.
 
-Thanks to the randmization in constructing each tree, and averaging the probabilistic predictions of the individual trees, 
-the tendency of a trained random forest classifier to overfit is generally small. % more immune to curse of dimensions, i.e. can work with  many features?
-
-Thus I skip the validation step to tune the complexity of the forest.
-Then the setting of validation set is not necessary, and it also reduce the actual training set. 
-I skip validation by setting the validate size \verb|split=0| in \verb|model.py|.
-
-\item A random forest classifier trained from a train set has already arranged the features at each node based on the train set, so the calculation of feature importance by the trained random forest classifier should be on a different data set (here a test set).
+Thanks to the randomization in constructing each tree, and the averaging of the probabilistic predictions of all the trees, 
+the tendency of a random forest classifier to overfit is generally small. % more immune to curse of dimensions, that is, can work with  many features?
+Thus I skip the validation step to tune the complexity of the forest, and then the usage of validation set is not necessary.
+Also because validation reduces the actual training set, I skip validation by setting the validation set's percentage \verb|split=0| in \verb|model.py|.
 
 \item To make the experiments reproducible, I fix the random seeds in the program \verb|model.py|, which appear in
-the \verb|random_state| parameter to both the constructor function \verb|sklearn.ensemble.RandomForestClassifier()|, and to the splitting datset function \verb|train_test_split()|.
+the \verb|random_state| parameter to both the forest constructor function \verb|sklearn.ensemble.RandomForestClassifier()|, and to the splitting dataset function \verb|train_test_split()|.
 Since I skip validation by setting the validate size \verb|split=0|,  the \verb|random_state| parameter to  \verb|train_test_split()| does not matter.
 % the output is random, although the random_state parameter is set to be fixed in model.py "setattr(clf, "random_state", 123)". why?
 % he miss the random_state param for  train_test_split(). 
-
-\item Decision trees and therefore random forest can take categorical features. %esplly for binary outcome, c.f. hastie $9.2.4
-Scikit-learn does not seem to directly support for categorical features in trees or forests \cite{web:slcat}. % how to specify a feature is categorical instead of numerical to scikit learn algorithms?
-If categorical features are coded as id numbers, this imposes a non-existing ordering on the categorical values, and the random forest training algorithm will rely on that ordering,  and the trained random forest classifier will be misleading in terms of interpretation and more overfit to the training data.
-
-% Feature importances calculated in random forest classifier may not work for numerically coded categorical features?
-
-
-\item It may also be misleading to apply numerical feature transformation (such as standardization of features  to have zero mean and unit variance) on  categorical features that are numerically coded.
-The random forest training algorithm theoretically does not depend on standardization, because standardization does not change the ordering between the feature values.
-Feature transformations can change the features undesirably for numerically coded categorical features, %, and for Chi squared independence test (see below)),
-It seems better not to do standardization in preprocessing. (I tried to set  \verb|scaler=None| (or just not specify the option) as a command line argument to the program \verb|model|, but the program will not predict on the test set.)
-% Q: how to pass none to scaler. in "model.py", there is a test "if opts.scaler". 
 
 \end{itemize}
 
@@ -573,13 +576,27 @@ It seems better not to do standardization in preprocessing. (I tried to set  \ve
 %% - the attributes in CMS dataset data.
 %% - combination of all the above features.
 
+\subsection{Ranking Individual Features}
+
+There are different ways to rank individual features in a classification problem.
+
+
+\subsubsection{Importance Measurements Returned by Random Forest Classifier}
+% instead of using random forest,  check if conf count is related or important to the classification or regression, by some other ways?
+
+When a random forest classifier make predictions on a test set,
+the relative rank (that is, depth) of a feature used as a decision node in a tree can be used to assess the relative importance of that feature with respect to the predictability of the target variable. Features used at the top of the tree contribute to the final prediction decision of a larger fraction of the input samples. The expected fraction of the samples they contribute to can thus be used as an estimate of the relative importance of the features. \cite{web:slguide}
+
+Note that a random forest classifier trained from a train set has already arranged the features at each node based on the train set, so the calculation of feature importance by the trained random forest classifier should be on a different data set (here a test set).
+
+In an object of the class \verb| sklearn.ensemble.RandomForestClassifier|, the attribute \verb|feature_importances_| stores the importances of the features on a test set.
 
 \subsubsection{Feature Ranking by Independence Testing}
 
-Alternatively, we can rank the features, by testing the independence between each feature and the popularity outcome, and then ordering their p-values (the smaller the p value for a feature, the more confidence we will have to reject the null hypothesis of independence between the feature and the outcome).
+Alternatively, we can rank the features, by testing the independence between each feature and the popularity outcome, and then ordering their p-values (the smaller the p value for testing a feature is, the more confidence we will have to reject the null hypothesis of independence between the feature and the outcome).
 
-I use \verb|sklearn.feature_selection.chi2()| and \verb|sklearn.feature_selection.f_classif()| in the Scikit-Learn library to perform the test.
-They implement two independence tests: the Chi-squared independence test and the ANOVA F test respectively.
+I add to \verb|model.py| two functions from the Scikit-Learn library to perform the independence tests:
+ \verb|sklearn.feature_selection.chi2()|, which implements the Chi-squared independence test, and \verb|sklearn.feature_selection.f_classif()|, which implements the ANOVA F test.
 
 Some notes:
 
@@ -587,34 +604,34 @@ Some notes:
 
   \item Since the independence tests are not part of the random forest learning algorithm, we can perform the tests on the training set.
 
-  \item ANOVA F test can only work between a numerical feature and a categorical outcome, because it calculates sample mean and variance of a feature.
-So the p values returned by the test for categorical features that are numerically coded may be unreliable.
+  \item ANOVA F test can only work between a numerical feature and a categorical outcome, because it calculates the sample mean and variance of a feature.
+So when applying the test for categorical features that are numerically coded, the p-values returned may be unreliable.
 
 % chi square independent test
 % I think the chi squared test function work for all feature types, although it says it only work for nonnegative features.
 % if it is correct,
-% Feature transformations, such as standardizing features to have zero mean and unit variance, will transform the features to have negative values. That makes feature selection tests (e.g. chi square test) not applicable.
+% Feature transformations, such as standardizing features to have zero mean and unit variance, will transform the features to have negative values. That makes feature selection tests (for example, chi square test) not applicable.
 % Therefore I apply the test of feature independece before standardizing features, or do not transform features.
 
 \end{itemize}
 
 
-\subsubsection{Experiments and Analysis}
+\subsection{Experiments and Analysis}
  
-In the output of the commands (see \ref{app1}),
+In the output of running the \verb|model.py| and \verb|check_prediction.py| on all the candidate features (see \ref{app1}),
 the two independence tests show that
 
 \begin{itemize}
 
   \item
-Future conference counts accumulated no less than 40 weeks ahead mostly have p-values less than $0.05$,
-while those within 40 weeks ahead mostly have bigger than $0.05$ p-values.
-This means that future conference counts likely rank higher if they are accumulated into futher future.
-However it is hard to use conference data that are more into the future (greate than $70$ weeks), because the CMS dataset data are provided only between Jan 2013 and May 2015, the CMS conference data are provided as late as Sept 2015, the records of these two data are matched based on their timestamps, and the experiment has already used the data from May 2013 to April 2014.
+Future conference counts accumulated more than 40 weeks mostly have p-values less than $0.05$,
+while those within 40 weeks mostly have p-values bigger than $0.05$.
+This means that future conference counts likely rank higher if they are accumulated into further future.
+However it is hard to use conference data that are more into the future (greater than $70$ weeks), because the timestamp-matched records between the CMS dataset data and the CMS conference data are between Jan 2013 and May 2015, and I have used the data from May 2013 to April 2014 in the experiment.
 
 \item
-  Most of the attributes from the CMS dataset data rank higher than most of the future conference count features.
-This implies that the future conference counts are not as important to the classification problem as many attributes from CMS dataset data.
+  Most of the attributes from the CMS dataset data rank higher than most of the future conference counts.
+This implies that the future conference counts are not as important to the classification problem as most attributes from CMS dataset data.
 
  \end{itemize} 
 
@@ -625,8 +642,7 @@ The feature importances from the trained random forest classifier also show the 
   
 \item   
 Some of \verb|rel2_N|, \verb|rel3_N| features are the most important.
-These features represents releases of datasets, and therefore their values are ordered.
-It is reasonable that datasets with longer release histories are more likely on high demand, and therefore will be more popular in the future as well.
+These features represents releases of datasets, and therefore it is reasonable that datasets with longer release histories are more likely on high demand, and therefore will be more popular in the future as well.
 
 \item
 \verb|cpu| and \verb|proc_evts| are also important.
@@ -644,7 +660,7 @@ The performance of the trained random forest classifier on the test set is almos
 \end{verbatim}
 
 
-For comparison, when the features are only those from the CMS dataset access data without the future conferenct counts, the performace is perfect (see  \ref{app2}):
+For comparison, when the features are only those from the CMS dataset access data, the performance is perfect (see  \ref{app2}):
 \begin{verbatim}
 Score metric (accuracy_score): 1.0
 Score metric (precision_score): 1.0
@@ -653,25 +669,25 @@ Score metric (f1_score): 1.0
 \end{verbatim}
 
 
-When the features are only the future conference counts (plus \verb|dataset| and \verb|dbs|, which must be used by \verb|model.py|), the performace falls backsomehow (see \ref{app3}):
+When the features are only the future conference counts (plus \verb|dataset| and \verb|dbs|, which must be used by \verb|model.py| and cannot be dropped), the performance falls back somehow (see \ref{app3}):
 \begin{verbatim}
 Score metric (accuracy_score): 0.960264900662
 Score metric (precision_score): 0.777777777778
 Score metric (recall_score): 0.636363636364
 Score metric (f1_score): 0.7
 \end{verbatim}
-The trained random forest classifier ranks \verb|dataset| and \verb|dbs| higher than the future conference counts
+The output also show that the trained random forest classifier ranks \verb|dataset| and \verb|dbs| higher than the future conference counts.
 This again implies that the future conference counts are not as important as the attributes from the dataset access data.
 
 
 \section{Conclusion}
 
-In this project, we study the influence of the future conference counts on prediciting the dataset popularity.
+In this project, we study the influence of the future conference counts on predicting the dataset popularity.
 
-The experiments show that the future conference counts can provide insights into understanding the problem and data,
+The experiments show that the future conference counts can provide insights into the problem and data,
 but are not as important to the classification as many attributes from CMS dataset data.
 
-Alternative ways to use conference counts in the classification problem, and modelling methods other than classification (such as regression or modelling between time series) may be worth exploration.
+Changing the way to use conference counts in the classification problem, or changing to a modeling method that is different from classification (such as modeling the dataset access count series on its own right, modeling the relation between the outcome series and feature series, or regression between the outcome and the features) may be worth exploration.
 
 
 
@@ -692,7 +708,7 @@ Alternative ways to use conference counts in the classification problem, and mod
 \input{output_conf_novalid.tex}
 
 %% 
-
+  
 %% References
 %%
 %% Following citation commands can be used in the body text:
@@ -703,7 +719,7 @@ Alternative ways to use conference counts in the classification problem, and mod
 
 %% References with bibTeX database:
 
-\section*{References}
+\section*{\refname} \addcontentsline{toc}{section}{\refname}
 \bibliographystyle{model1-num-names}
 \bibliography{sample.bib}
 

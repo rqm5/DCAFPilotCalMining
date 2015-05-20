@@ -16,50 +16,59 @@
 \gdef\HyperFirstAtBeginDocument#1{#1}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{web:wiki}
+\citation{web:cms}
 \citation{web:vk}
+\Newlabel{cs}{a}
+\Newlabel{phy}{b}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Overview}{1}{section.1}}
 \newlabel{S:1}{{1}{1}{Overview}{section.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Flowchart of Time Series Generation and Analysis\relax }}{2}{figure.1}}
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{chart1}{{1}{2}{Flowchart of Time Series Generation and Analysis\relax }{figure.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Workflow and Design of the Project}{2}{subsection.1.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Flowchart of Classification and Train/Test Set Generation\relax }}{3}{figure.2}}
-\newlabel{chart2}{{2}{3}{Flowchart of Classification and Train/Test Set Generation\relax }{figure.2}{}}
+\citation{web:lxplus}
 \citation{web:tlgithub}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Workflow and Design of the Project}{2}{subsection.1.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Flowchart of Time Series Generation and Analysis\relax }}{3}{figure.1}}
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{chart1}{{1}{3}{Flowchart of Time Series Generation and Analysis\relax }{figure.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Flowchart of Classification and Train/Test Set Generation\relax }}{4}{figure.2}}
+\newlabel{chart2}{{2}{4}{Flowchart of Classification and Train/Test Set Generation\relax }{figure.2}{}}
 \citation{web:vkgithub}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Preparing Datasets}{5}{section.2}}
 \newlabel{S:2}{{2}{5}{Preparing Datasets}{section.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}CMS Conference Data}{5}{subsection.2.1}}
 \citation{web:vk}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}CMS Dataset Data}{6}{subsection.2.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Merge Conference Data to Dataset Access Data}{7}{subsection.2.3}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Modeling and Analysis for Predicting Dataset Usage}{7}{section.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Add Conference Counts to Dataset Access Records in the same week}{7}{subsection.2.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Time Series Analysis}{7}{section.3}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Histogram of lengths of dataset access count series\relax }}{8}{figure.3}}
 \newlabel{len}{{3}{8}{Histogram of lengths of dataset access count series\relax }{figure.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Time Series Analysis}{8}{subsection.3.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces DFT of conference count per week time series\relax }}{9}{figure.4}}
-\newlabel{cffft}{{4}{9}{DFT of conference count per week time series\relax }{figure.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}Seasonality}{9}{subsubsection.3.1.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces DFT of access count per week time series of a dataset\relax }}{10}{figure.5}}
-\newlabel{dsfft1}{{5}{10}{DFT of access count per week time series of a dataset\relax }{figure.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces DFT of access count per week time series of a dataset\relax }}{10}{figure.6}}
-\newlabel{dsfft2}{{6}{10}{DFT of access count per week time series of a dataset\relax }{figure.6}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}Cross Correlation}{11}{subsubsection.3.1.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Seasonality}{9}{subsection.3.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces DFT of weekly conference count time series\relax }}{10}{figure.4}}
+\newlabel{cffft}{{4}{10}{DFT of weekly conference count time series\relax }{figure.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces DFT of weekly access count time series of a dataset\relax }}{10}{figure.5}}
+\newlabel{dsfft1}{{5}{10}{DFT of weekly access count time series of a dataset\relax }{figure.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces DFT of weekly access count time series of a dataset\relax }}{11}{figure.6}}
+\newlabel{dsfft2}{{6}{11}{DFT of weekly access count time series of a dataset\relax }{figure.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Cross Correlation}{11}{subsection.3.2}}
 \@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Cross correlation between the conference count series and the access count series of a dataset\relax }}{12}{figure.7}}
 \newlabel{cor1}{{7}{12}{Cross correlation between the conference count series and the access count series of a dataset\relax }{figure.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Cross correlation between the conference count series and the access count series of a dataset\relax }}{12}{figure.8}}
-\newlabel{cor2}{{8}{12}{Cross correlation between the conference count series and the access count series of a dataset\relax }{figure.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Cross correlation between the conference count series and the access count series of a dataset\relax }}{13}{figure.8}}
+\newlabel{cor2}{{8}{13}{Cross correlation between the conference count series and the access count series of a dataset\relax }{figure.8}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Cross correlation between the conference count series and the access count series of a dataset\relax }}{13}{figure.9}}
 \newlabel{cor3}{{9}{13}{Cross correlation between the conference count series and the access count series of a dataset\relax }{figure.9}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Histogram of lags with maximum cross correlation\relax }}{14}{figure.10}}
 \newlabel{laghist}{{10}{14}{Histogram of lags with maximum cross correlation\relax }{figure.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Classification}{14}{subsection.3.2}}
-\citation{web:slguide}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Importance Measurements Returned by Random Forest Classifier}{16}{subsubsection.3.2.1}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Classification}{14}{section.4}}
+\citation{web:vk}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Candidate Features}{15}{subsection.4.1}}
 \citation{web:slcat}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Feature Ranking by Independence Testing}{17}{subsubsection.3.2.2}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.3}Experiments and Analysis}{18}{subsubsection.3.2.3}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Conclusion}{19}{section.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Feature Types}{16}{subsection.4.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Ranking Sets of Features}{16}{subsection.4.3}}
+\citation{web:slguide}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Ranking Individual Features}{17}{subsection.4.4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}Importance Measurements Returned by Random Forest Classifier}{17}{subsubsection.4.4.1}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}Feature Ranking by Independence Testing}{18}{subsubsection.4.4.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Experiments and Analysis}{18}{subsection.4.5}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{20}{section.5}}
 \@writefile{toc}{\contentsline {section}{\numberline {Appendix A}Output when using both future conference counts and dataset access attributes as features}{20}{appendix.A}}
 \newlabel{app1}{{Appendix A}{20}{Output when using both future conference counts and dataset access attributes as features}{appendix.A}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {Appendix B}Output when using only dataset access attributes as features}{27}{appendix.B}}
@@ -68,8 +77,12 @@
 \newlabel{app3}{{Appendix C}{33}{Output when using mostly future conference counts as features}{appendix.C}{}}
 \bibstyle{model1-num-names}
 \bibdata{sample.bib}
-\bibcite{web:vk}{{1}{2015}{{Kuznetsov}}{{}}}
-\bibcite{web:tlgithub}{{2}{2015}{{Li}}{{}}}
-\bibcite{web:vkgithub}{{3}{2015}{{Kuznetsov}}{{}}}
-\bibcite{web:slguide}{{4}{2015{}}{{developers}}{{}}}
-\bibcite{web:slcat}{{5}{2015{}}{{developers}}{{}}}
+\bibcite{web:wiki}{{1}{2015}{{\relax Wikipedia}}{{}}}
+\bibcite{web:cms}{{2}{2015}{{\relax TWiki at CERN}}{{}}}
+\bibcite{web:vk}{{3}{2015}{{\relax Valentin Kuznetsov}}{{}}}
+\bibcite{web:lxplus}{{4}{2015}{{\relax CERN IT Dept}}{{}}}
+\bibcite{web:tlgithub}{{5}{2015}{{\relax Ting Li}}{{}}}
+\bibcite{web:vkgithub}{{6}{2015}{{\relax Valentin Kuznetsov}}{{}}}
+\bibcite{web:slguide}{{7}{2015{}}{{\relax Scikit-Learn developers}}{{}}}
+\bibcite{web:slcat}{{8}{2015{}}{{\relax Scikit-Learn developers}}{{}}}
+\@writefile{toc}{\contentsline {section}{References}{36}{section*.1}}

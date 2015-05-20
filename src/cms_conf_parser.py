@@ -1,33 +1,8 @@
 #!/usr/bin/env python
-
+#-*- coding: utf-8 -*-
 """
-This is a stand-alone python script, and run from src directory
-python src/cms_conf_parser.py --indump data/conf/cms_conf.csv.gz --inschema data/conf/schema --outdir data/conf
-input:
-data/cms_conf.csv.gz: a csv.gz data file dumped from ORACLE DB. (dump file contains extra spaces, newlines, etc.)
-data/schema: a schema file decribing the attributes of each conference record (see below)
-output:
-data/cms_conf_parsed.csv.gz: a csv.gz file with the schema as columns, conference records as rows (sorted by date), with the attributes in each record delimited by TAB. I.e. reorganize cms_conf.csv.gz in a cleaner way.
-data/cms_conf_ct_perweek.csv.gz: a csv.gz file with week and conf ct as columns, each record reprepsenting the week and the nb of conferences in the week, which delimited by TAB
-data/cms_conf_ct_future.csv.gz: a csv.gz file with week, conf ct in future 1 week, conf ct in future 4 weeks, and conf ct in future 12 weeks. 
-
-e.g.
-For CMS calendar data, the schema file is:
-CONF_ID                        NOT NULL NUMBER
-PRES_ID                        NOT NULL NUMBER
-CONF_NAME                               VARCHAR2(1024)
-CONF_NAME_SHORT                         VARCHAR2(100)
-CONF_START                              DATE
-CONF_CATEGORY                           VARCHAR2(8)
-CONF_DESCRIPTION_CATEGORY               VARCHAR2(1024)
-CONF_CITY                               VARCHAR2(1024)
-COUNTRY                                 VARCHAR2(1024)
-CONF_WEB                                VARCHAR2(1024)
-PRES_TITLE                              VARCHAR2(1024)
-PRES_CATEGORY                           VARCHAR2(8)
-PRES_DESCRIPTION_CATEGORY               VARCHAR2(1024)
-
-This is also a module with functions maybe reused in other program via import statement.
+Author     : Ting Li <liting0612 At gmail dot com>
+Description: Parses the conference data dump file into a conference count time series.
 """
 
 import argparse
@@ -101,64 +76,6 @@ def parse_schema(fschema):
     # print attribute2type.items()
     return  attribute2type
 
-
-def parse_dataframe_by_split(fdataframe, attribute2type):
-    """Parse a dataframe file, by specifying record separator and file separator and splitting according to the separtors
-    it assumes that each field can't span more than one lines.
-    input: 
-    fdataframe: a dataframe file, 
-    attribute2type: an ordered dict of each schema attribute and its type
-    output: 
-    conf_list: a list of dicts, each of which is the parsed result of each conference by the schema
-    """    
-    schema = attribute2type.keys()
-
-    # dataframe
-    lines = gzip.open(fdataframe).readlines()
-
-    # preprocessing
-    lines = lines[2:-5] # remove preceding and trailing SQL lines
-    text = ''.join(lines)
-    while text[-1]=='\n': # remove trailing new line chars, otherwise splitting the last conf into conf items will have empty item
-        text = text[0:-1]
-
-    # split into conferences
-    confs = text.rsplit('\n\n') # choose rsplit not split because the first attribute in the schema must not be None, while the last attribute can be.
-
-    # parse each conference by schema
-    field_separator = '(?<=\d),  +| ,(?! )|(?<=\D-\d\d),|\n' # the first alternative separtor is for not separting "State, US", and the second alternative separator is for separating "CONF_START,CONF_CATEGORY"
-
-    confs_list = []
-    j_start = 0 # for dealing with missing value e.g. all (?) missing values happen for CONF_WEB
-    for i in range(0, len(confs)):
-        
-        conf = confs[i]
-        conf_items = re.split(field_separator, conf)
-
-        assert(len(conf_items) <= len(schema)) # disallow more conf items than schema attributes. allow fewer conf items than schema attributes, because of missing value and the way I split into conferences; 
-        if j_start == 0:
-            # conf_dict =collections.OrderedDict()
-            conf_dict =ordereddict.OrderedDict()
-        for j in range(0, len(conf_items)):
-            conf_dict[schema[j+j_start]] = attribute2type[schema[j+j_start]](conf_items[j])  # convert the conf item to the attribute's type
-
-        if j+j_start+1 < len(schema): # where there is missing value for some attribute
-            conf_dict[schema[j+j_start+1]] = None
-            j_start = j+j_start+2  # update j_start
-            if j_start == len(schema):
-                j_start = 0
-        elif j+j_start+1 == len(schema):
-            j_start = 0
-        else:  # unlikely
-            raw_input('Error! enter <return> to continue .. ')
-            import sys
-            sys.exit()
-        
-        if j_start ==0:
-            confs_list.append(conf_dict)
-
-        
-    return confs_list        
         
 
 
@@ -343,12 +260,35 @@ def count_confs_in_future(confct_by_wk, periods):
 
 ###################
 
-if __name__ == '__main__':
+def main():
 
-    parser = argparse.ArgumentParser(description='Parses the conference data dump file into a conference count time series.')
+    parser = argparse.ArgumentParser(description='''Parses the conference data dump file into a conference count time series.
+
+Example:
+cms_conf_parser.py --indump cms_conf.csv.gz --inschema schema --outdir conf
+''', formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--indump', dest='indump', help='a csv.gz file for conference data dump from a database')
-    parser.add_argument('--inschema', dest='inschema', help='a plain text file for the schema of the conference data dump file')
-    parser.add_argument('--outdir', dest='outdir', help='a dir for csv.gz files for conference count per week time series, for conference count for future weeks, and for parsed conference records')
+    parser.add_argument('--inschema', dest='inschema', help='''a plain text file for the schema of the conference data dump file
+For example:
+CONF_ID                        NOT NULL NUMBER
+PRES_ID                        NOT NULL NUMBER
+CONF_NAME                               VARCHAR2(1024)
+CONF_NAME_SHORT                         VARCHAR2(100)
+CONF_START                              DATE
+CONF_CATEGORY                           VARCHAR2(8)
+CONF_DESCRIPTION_CATEGORY               VARCHAR2(1024)
+CONF_CITY                               VARCHAR2(1024)
+COUNTRY                                 VARCHAR2(1024)
+CONF_WEB                                VARCHAR2(1024)
+PRES_TITLE                              VARCHAR2(1024)
+PRES_CATEGORY                           VARCHAR2(8)
+PRES_DESCRIPTION_CATEGORY               VARCHAR2(1024)
+''')
+    parser.add_argument('--outdir', dest='outdir', help='''a dir containing following output files:
+cms_conf_ct_perweek.csv.gz: a csv.gz file for output conference count per week time series, with week and conf ct as columns, each record reprepsenting the week and the nb of conferences in the week, which delimited by TAB
+cms_conf_ct_future.csv.gz: a csv.gz file for output conference count up to some future weeks, 
+cms_conf_parsed.csv.gz: a csv.gz file for output parsed conference records: with the schema as columns, conference records as rows (sorted by date), with the attributes in each record delimited by TAB. I.e. reorganize cms_conf.csv.gz in a cleaner way.
+''')
     args = parser.parse_args()
 
 
@@ -357,10 +297,7 @@ if __name__ == '__main__':
     attribute2type = parse_schema(args.inschema)
     # print attribute2type
 
-    # two ways of parsing dataframe: (prefer the second way over the first)
-    # by specifying separtors for separating records and fields, assume each field of a record only spans one line
-    # confs_list1 = parse_dataframe_by_split(args.indump, attribute2type)
-    # by matching each record and field.  allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
+    # parsing dataframe by matching each record and field.  allow PRES_TITLE field span more than one lines, and assume other fields can't span more than one line
     confs_list = parse_dataframe_by_match_record(args.indump, attribute2type)    
 
     # Output the parsed result
@@ -445,3 +382,8 @@ if __name__ == '__main__':
                 csvfile.write(',' + str(confct_future[i][j]))
             csvfile.write('\n')
     csvfile.close()
+
+if __name__ == '__main__':
+
+    main()
+

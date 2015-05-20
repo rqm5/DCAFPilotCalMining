@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+#-*- coding: utf-8 -*-
+"""
+Author     : Ting Li <liting0612 At gmail dot com>
+Description: Select records from dataset access files whose attribute is some value.
+"""
 
 import os
 import re
@@ -9,7 +14,7 @@ import glob
 # import ordereddict
 
 ''' Example:
-src/SplitTier.py --indir data/datasetaccess --attr tier --attrval 0 --outdir data/DatasetAccessSplit
+select.py --indir original --attr tier --attrval 2 --outdir tier2
 '''
 
 def write_dct_lst(dct_lst, attrs, filename ):
@@ -32,9 +37,12 @@ def write_dct_lst(dct_lst, attrs, filename ):
         csvfile.write(','.join(line) + '\n')
     csvfile.close()
 
-if __name__ == '__main__':
+def main():
 
-    parser = argparse.ArgumentParser(description='Select records from dataset access files whose attribute is some value')
+    parser = argparse.ArgumentParser(description='''Select records from dataset access files whose attribute is some value. 
+    
+Example:
+select.py --indir original --attr tier --attrval 2 --outdir tier2''', formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--indir', dest='indir', help='a dir containing the csv.gz files for the input original dataset access data')
     parser.add_argument('--attr', dest='attr', help='a attribute to select by')
     parser.add_argument('--attrval', dest='attrval', help='a value of the attribute to select by')
@@ -82,3 +90,6 @@ if __name__ == '__main__':
         # csvfile.close()
             
         
+if __name__ == '__main__':
+
+    main()

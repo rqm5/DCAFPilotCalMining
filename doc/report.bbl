@@ -1,4 +1,4 @@
-\begin{thebibliography}{5}
+\begin{thebibliography}{8}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\href}[2]{#2}
@@ -12,29 +12,45 @@
 \providecommand{\bibinfo}[2]{#2}
 \ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
 %Type = Misc
-\bibitem[{Kuznetsov(2015)}]{web:vk}
-\bibinfo{author}{V.~Kuznetsov}, \bibinfo{title}{Dcaf pilot for cms: pilot
-  project for cms computing data-mining}, \bibinfo{year}{2015}. \URLprefix
-  \url{http://www.lepp.cornell.edu/~vk/Talks/Pilot1/it.html}.
-%Type = Misc
-\bibitem[{Li(2015)}]{web:tlgithub}
-\bibinfo{author}{T.~Li}, \bibinfo{title}{Dcaf pilot calendar mining site},
+\bibitem[{{\relax Wikipedia}(2015)}]{web:wiki}
+\bibinfo{author}{{\relax Wikipedia}}, \bibinfo{title}{{Compact Muon Solenoid}},
   \bibinfo{year}{2015}. \URLprefix
+  \url{http://en.wikipedia.org/wiki/Compact_Muon_Solenoid}.
+%Type = Misc
+\bibitem[{{\relax TWiki at CERN}(2015)}]{web:cms}
+\bibinfo{author}{{\relax TWiki at CERN}}, \bibinfo{title}{{2.2 CMS Computing
+  Model, The CMS Offline WorkBook}}, \bibinfo{year}{2015}. \URLprefix
+  \url{https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookComputingModel}.
+%Type = Misc
+\bibitem[{{\relax Valentin Kuznetsov}(2015)}]{web:vk}
+\bibinfo{author}{{\relax Valentin Kuznetsov}}, \bibinfo{title}{{DCAF Pilot for
+  CMS: pilot project for CMS computing data-mining}}, \bibinfo{year}{2015}.
+  \URLprefix \url{http://www.lepp.cornell.edu/~vk/Talks/Pilot1/it.html}.
+%Type = Misc
+\bibitem[{{\relax CERN IT Dept}(2015)}]{web:lxplus}
+\bibinfo{author}{{\relax CERN IT Dept}}, \bibinfo{title}{{LXPLUS Service}},
+  \bibinfo{year}{2015}. \URLprefix
+  \url{http://information-technology.web.cern.ch/services/lxplus-service}.
+%Type = Misc
+\bibitem[{{\relax Ting Li}(2015)}]{web:tlgithub}
+\bibinfo{author}{{\relax Ting Li}}, \bibinfo{title}{{DCAF Pilot Calendar Mining
+  site}}, \bibinfo{year}{2015}. \URLprefix
   \url{https://github.com/tli12/DCAFPilotCalMining}.
 %Type = Misc
-\bibitem[{Kuznetsov(2015)}]{web:vkgithub}
-\bibinfo{author}{V.~Kuznetsov}, \bibinfo{title}{Dmwm analytics project site},
-  \bibinfo{year}{2015}. \URLprefix \url{https://github.com/dmwm/DMWMAnalytics}.
+\bibitem[{{\relax Valentin Kuznetsov}(2015)}]{web:vkgithub}
+\bibinfo{author}{{\relax Valentin Kuznetsov}}, \bibinfo{title}{{DMWM Analytics
+  Project site}}, \bibinfo{year}{2015}. \URLprefix
+  \url{https://github.com/dmwm/DMWMAnalytics}.
 %Type = Misc
-\bibitem[{developers(2015{\natexlab{a}})}]{web:slguide}
-\bibinfo{author}{S.-L. developers}, \bibinfo{title}{1.11.2.5. feature
-  importance evaluation, scikit-learn version 0.16.1 user guide},
+\bibitem[{{\relax Scikit-Learn developers}(2015{\natexlab{a}})}]{web:slguide}
+\bibinfo{author}{{\relax Scikit-Learn developers}}, \bibinfo{title}{{1.11.2.5.
+  Feature importance evaluation, Scikit-Learn version 0.16.1 User Guide}},
   \bibinfo{year}{2015}{\natexlab{a}}. \URLprefix
   \url{http://scikit-learn.org/stable/modules/ensemble.html#feature-importance-evaluation}.
 %Type = Misc
-\bibitem[{developers(2015{\natexlab{b}})}]{web:slcat}
-\bibinfo{author}{S.-L. developers}, \bibinfo{title}{Categorical split for
-  decision tree discussion}, \bibinfo{year}{2015}{\natexlab{b}}. \URLprefix
-  \url{https://github.com/scikit-learn/scikit-learn/pull/3346}.
+\bibitem[{{\relax Scikit-Learn developers}(2015{\natexlab{b}})}]{web:slcat}
+\bibinfo{author}{{\relax Scikit-Learn developers}}, \bibinfo{title}{Categorical
+  split for decision tree discussion}, \bibinfo{year}{2015}{\natexlab{b}}.
+  \URLprefix \url{https://github.com/scikit-learn/scikit-learn/pull/3346}.
 
 \end{thebibliography}

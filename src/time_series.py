@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+#-*- coding: utf-8 -*-
+"""
+Author     : Ting Li <liting0612 At gmail dot com>
+Description: Generates time series for each dataset from the dataset access data, and analyze the cross correlations and seasonalities for the time series of dataset access and time series of conferenct count.
+"""
 
 import os
 import re
@@ -13,17 +18,13 @@ from scipy.stats.stats import pearsonr
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-''' usage example:
-datasetdir=/afs/cern.ch/user/t/tili/mywork/DCAFPilotCalMining/data
-time_series.py --indir $datasetdir/tier/2/original      --inconf $datasetdir/conf/cms_conf_ct_perweek.csv.gz   --outdir $datasetdir/tier/2/datasets
-'''
 
 def crosscorr(lst1, lst2, index_match, lags):
     ''' Computer cross correlation between two time series lst1 and lst2, starting relative position of lst1 in lst2, over lag range lags
     input:
-    lst1 and lst2: two lists for two time series
-    index_match: an integer, for the relative time position of lst1 wrt lst2
-    lags: a list for the range of lags
+    lst1 and lst2: two time series, as two lists
+    index_match: the original time position of lst1 wrt lst2, as an integer 
+    lags: the range of lags, as a list
     output:
     cc: a dictionary with key being lag, and value being a pair of cross correlation and p-value for testing uncorrelatedness null
     '''
@@ -54,11 +55,11 @@ def crosscorr(lst1, lst2, index_match, lags):
 
 
 def fft_half_spectrum(signal):
-    ''' Computer DFT of a time series signal by FFT
+    ''' Computer DFT of a time series signal in the positive half frequency range, by FFT
     Input:
-    signal: a list for a time series
+    signal: a time series, as a list
     output:
-    [mgft,freqs]: a list of sublists for DFT magnitudes and frquencies, over the positive half frequency range [0,0.5]
+    [mgft,freqs]: DFT magnitudes and frquencies, over the positive half frequency range [0,0.5], as a list of sublists
     '''
 
     signal = signal - numpy.mean(signal)
@@ -72,7 +73,7 @@ def fft_half_spectrum(signal):
     return [mgft, freqs]
 
 def group_by_dataset_and_extract_access (dct_lst):
-    ''' Convert a list of dicts (for records), into a list of dicts (each for a dataset) which are sorted by dataset length, and the records of each datset is sorted by timestamp.
+    ''' Convert a list of dicts (each for records), into a list of dicts (each for a dataset). In the output list of dicts, the dicts are sorted by dataset length, and the value of each key in each datset's dict is sorted by timestamp.
     input:
     dct_lst: a list of dicts, each dict for a record
     output:
@@ -138,9 +139,13 @@ def group_by_dataset_and_extract_access (dct_lst):
 
 
 
-if __name__ == '__main__':
+def main():
 
-    parser = argparse.ArgumentParser(description='Generates time series for each dataset from the dataset access data, and analyze the cross correlations and seasonalities for the time series of dataset access and time series of conferenct count')
+    parser = argparse.ArgumentParser(description='''Generates time series for each dataset from the dataset access data, and analyze the cross correlations and seasonalities for the time series of dataset access and time series of conferenct count.
+
+Example:
+time_series.py --indir original      --inconf cms_conf_ct_perweek.csv.gz   --outdir datasets
+''', formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--indir', dest='indir', help='a dir containing csv.gz files for the input dataset access data')
     parser.add_argument('--inconf', dest='inconf', help='a csv.gz file for the input conference count data')
     parser.add_argument('--outdir', dest='outdir', help='a dir containing csv.gz files for the output time series of each dataset, and image files for the plots of cross correlation and FFT of the time series')
@@ -434,3 +439,8 @@ if __name__ == '__main__':
         pp = PdfPages(args.outdir + '/' + '_'.join(dct['dataset_dbs']) + '_' + str(len(signal)) + '_fft.pdf')
         pp.savefig(fig)
         pp.close()
+
+if __name__ == '__main__':
+
+    main()
+

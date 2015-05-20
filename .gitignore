@@ -1,4 +1,6 @@
-data/
+data/classification
+data/conf
+data/datasetaccess
 src.bk
 *~
 *.pyc

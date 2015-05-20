@@ -3,16 +3,20 @@
 \BOOKMARK [1][]{section.2}{Preparing Datasets}{}% 3
 \BOOKMARK [2][]{subsection.2.1}{CMS Conference Data}{section.2}% 4
 \BOOKMARK [2][]{subsection.2.2}{CMS Dataset Data}{section.2}% 5
-\BOOKMARK [2][]{subsection.2.3}{Merge Conference Data to Dataset Access Data}{section.2}% 6
-\BOOKMARK [1][]{section.3}{Modeling and Analysis for Predicting Dataset Usage}{}% 7
-\BOOKMARK [2][]{subsection.3.1}{Time Series Analysis}{section.3}% 8
-\BOOKMARK [3][]{subsubsection.3.1.1}{Seasonality}{subsection.3.1}% 9
-\BOOKMARK [3][]{subsubsection.3.1.2}{Cross Correlation}{subsection.3.1}% 10
-\BOOKMARK [2][]{subsection.3.2}{Classification}{section.3}% 11
-\BOOKMARK [3][]{subsubsection.3.2.1}{Importance Measurements Returned by Random Forest Classifier}{subsection.3.2}% 12
-\BOOKMARK [3][]{subsubsection.3.2.2}{Feature Ranking by Independence Testing}{subsection.3.2}% 13
-\BOOKMARK [3][]{subsubsection.3.2.3}{Experiments and Analysis}{subsection.3.2}% 14
-\BOOKMARK [1][]{section.4}{Conclusion}{}% 15
-\BOOKMARK [1][]{appendix.A}{Output when using both future conference counts and dataset access attributes as features}{}% 16
-\BOOKMARK [1][]{appendix.B}{Output when using only dataset access attributes as features}{}% 17
-\BOOKMARK [1][]{appendix.C}{Output when using mostly future conference counts as features}{}% 18
+\BOOKMARK [2][]{subsection.2.3}{Add Conference Counts to Dataset Access Records in the same week}{section.2}% 6
+\BOOKMARK [1][]{section.3}{Time Series Analysis}{}% 7
+\BOOKMARK [2][]{subsection.3.1}{Seasonality}{section.3}% 8
+\BOOKMARK [2][]{subsection.3.2}{Cross Correlation}{section.3}% 9
+\BOOKMARK [1][]{section.4}{Classification}{}% 10
+\BOOKMARK [2][]{subsection.4.1}{Candidate Features}{section.4}% 11
+\BOOKMARK [2][]{subsection.4.2}{Feature Types}{section.4}% 12
+\BOOKMARK [2][]{subsection.4.3}{Ranking Sets of Features}{section.4}% 13
+\BOOKMARK [2][]{subsection.4.4}{Ranking Individual Features}{section.4}% 14
+\BOOKMARK [3][]{subsubsection.4.4.1}{Importance Measurements Returned by Random Forest Classifier}{subsection.4.4}% 15
+\BOOKMARK [3][]{subsubsection.4.4.2}{Feature Ranking by Independence Testing}{subsection.4.4}% 16
+\BOOKMARK [2][]{subsection.4.5}{Experiments and Analysis}{section.4}% 17
+\BOOKMARK [1][]{section.5}{Conclusion}{}% 18
+\BOOKMARK [1][]{appendix.A}{Output when using both future conference counts and dataset access attributes as features}{}% 19
+\BOOKMARK [1][]{appendix.B}{Output when using only dataset access attributes as features}{}% 20
+\BOOKMARK [1][]{appendix.C}{Output when using mostly future conference counts as features}{}% 21
+\BOOKMARK [1][]{section*.1}{References}{}% 22

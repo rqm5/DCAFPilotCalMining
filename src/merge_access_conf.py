@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+#-*- coding: utf-8 -*-
+"""
+Author     : Ting Li <liting0612 At gmail dot com>
+Description: Add records from conference counts to dataset access records.
+"""
+
 
 import os
 import re
@@ -6,12 +12,6 @@ import csv
 import gzip
 import argparse
 import glob
-import ordereddict
-
-''' usage example:
-src/merge_access_conf.py --indir     --inconf   --outdir
-'''
-
 
 def write_dct_lst(dct_lst, attrs, filename ):
     ''' write a list of dictionaries with common attributes to a file, according to specified order of attributes 
@@ -32,10 +32,13 @@ def write_dct_lst(dct_lst, attrs, filename ):
     csvfile.close()
 
 
-if __name__ == '__main__':
+def main():
 
-    parser = argparse.ArgumentParser(description='Add records from conference counts to dataset access records')
-    parser.add_argument('--indir', dest='indir', help='a dir containing the csv.gz files for the input dataset access data')
+    parser = argparse.ArgumentParser(description='''Add records from conference counts to dataset access records.
+
+Example:
+merge_access_conf.py --indir original    --inconf cms_conf_ct_future.csv.gz --outdir merged''', formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('--indir', dest='indir', help='a dir containing the csv.gz files for the input dataset access data, assuming the data filenames start with "dataframe" ')
     parser.add_argument('--inconf', dest='inconf', help='a csv.gz file for the input conference count data')
     parser.add_argument('--outdir', dest='outdir', help='a dir containing csv.gz files for the output merged data')
     args = parser.parse_args()
@@ -50,7 +53,8 @@ if __name__ == '__main__':
     reader = csv.DictReader(csvfile)
     inconf_lst= list(reader) # [ordereddict.OrderedDict(zip(keys,row)) for row in reader ] # # a list of dicts, each for a row in the csv file
     ## inconf_dct = ordereddict.OrderedDict({indic['tstamp']:{k:indic[k] for k in indic if k != 'tstamp'} for indic in inconf_lst}) # convert the list of dicts to a dict with tstamp being the key
-    inconf_dct = ordereddict.OrderedDict((indic['tstamp'],ordereddict.OrderedDict((k,indic[k]) for k in indic if k != 'tstamp')) for indic in inconf_lst) # convert the list of dicts to a dict with tstamp being the key
+    # inconf_dct = ordereddict.OrderedDict((indic['tstamp'],ordereddict.OrderedDict((k,indic[k]) for k in indic if k != 'tstamp')) for indic in inconf_lst) # convert the list of dicts to a dict with tstamp being the key
+    inconf_dct = dict((indic['tstamp'],dict((k,indic[k]) for k in indic if k != 'tstamp')) for indic in inconf_lst) # convert the list of dicts to a dict with tstamp being the key
     csvfile.close()
     
 
@@ -89,3 +93,7 @@ if __name__ == '__main__':
         # csvfile.close()
             
         
+if __name__ == '__main__':
+
+    main()
+
